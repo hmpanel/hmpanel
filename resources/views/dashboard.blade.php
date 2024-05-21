@@ -7,9 +7,6 @@
 
     <div class="py-12">
 
-
-        <link href="https://itsmashikur.github.io/assets/font-awesome-6-pro-main/css/all.css" rel="stylesheet" />
-
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             <!-- Grid -->

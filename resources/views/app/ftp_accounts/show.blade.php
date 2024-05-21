@@ -10,7 +10,7 @@
             <x-partials.card>
                 <x-slot name="title">
                     <a href="{{ route('ftp-accounts.index') }}" class="mr-4"
-                        ><i class="mr-1 icon ion-md-arrow-back"></i
+                        ><i class="mr-1 fa-duotone fa-arrow-left"></i
                     ></a>
                 </x-slot>
 
@@ -40,7 +40,7 @@
 
                     @can('create', App\Models\FtpAccount::class)
                     <a href="{{ route('ftp-accounts.create') }}" class="button">
-                        <i class="mr-1 icon ion-md-add"></i>
+                        <i class="mr-1 fa-duotone fa-circle-plus"></i>
                         @lang('crud.common.create')
                     </a>
                     @endcan

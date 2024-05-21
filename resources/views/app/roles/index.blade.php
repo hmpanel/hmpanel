@@ -25,7 +25,7 @@
                                             type="submit"
                                             class="button button-primary"
                                         >
-                                            <i class="icon ion-md-search"></i>
+                                            <i class="fa-duotone fa-magnifying-glass"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -37,7 +37,7 @@
                                 href="{{ route('roles.create') }}"
                                 class="button button-primary"
                             >
-                                <i class="mr-1 icon ion-md-add"></i>
+                                <i class="mr-1 fa-duotone fa-circle-plus"></i>
                                 @lang('crud.common.create')
                             </a>
                             @endcan
@@ -46,8 +46,8 @@
                 </div>
 
                 <div class="block w-full overflow-auto scrolling-touch">
-                    <table class="w-full max-w-full mb-4 bg-transparent">
-                        <thead class="text-gray-700">
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b">
                             <tr>
                                 <th class="px-4 py-3 text-left">
                                     @lang('crud.roles.inputs.name')
@@ -57,7 +57,7 @@
                         </thead>
                         <tbody class="text-gray-600">
                             @forelse($roles as $role)
-                            <tr class="hover:bg-gray-50">
+                            <tr class="hover:bg-gray-50 {{ $loop->last ? '' : 'border-b' }} {{ $loop->index % 2 !== 0 ? 'bg-gray-50' : '' }}">
                                 <td class="px-4 py-3 text-left">
                                     {{ $role->name ?? '-' }}
                                 </td>
@@ -84,7 +84,7 @@
                                                 class="button"
                                             >
                                                 <i
-                                                    class="icon ion-md-create"
+                                                    class="fa-duotone fa-pen-to-square"
                                                 ></i>
                                             </button>
                                         </a>
@@ -97,7 +97,7 @@
                                                 type="button"
                                                 class="button"
                                             >
-                                                <i class="icon ion-md-eye"></i>
+                                                <i class="fa-duotone fa-eye"></i>
                                             </button>
                                         </a>
                                         @endcan @can('delete', $role)
@@ -112,11 +112,7 @@
                                                 class="button"
                                             >
                                                 <i
-                                                    class="
-                                                        icon
-                                                        ion-md-trash
-                                                        text-red-600
-                                                    "
+                                                    class="fa-duotone fa-trash-can"
                                                 ></i>
                                             </button>
                                         </form>
@@ -126,7 +122,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="2">
+                                <td colspan="2" class="p-2 text-center">
                                     @lang('crud.common.no_items_found')
                                 </td>
                             </tr>
@@ -134,7 +130,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="2">
+                                <td colspan="2" class="p-2 text-center">
                                     <div class="mt-10 px-4">
                                         {!! $roles->render() !!}
                                     </div>
