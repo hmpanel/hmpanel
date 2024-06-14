@@ -5,8 +5,8 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+        <div class="container full-container py-5 flex flex-col gap-6">
             <x-partials.card>
                 <x-slot name="title">
                     <a href="{{ route('databases.index') }}" class="mr-4"
@@ -40,5 +40,5 @@
                 </x-form>
             </x-partials.card>
         </div>
-    </div>
+
 </x-app-layout>

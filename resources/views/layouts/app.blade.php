@@ -1,74 +1,77 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <!-- Required meta tags -->
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Favicon icon-->
+    <link rel="shortcut icon" type="image/png" href="./assets/images/logos/favicon.png" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+    <!-- Core Css -->
+    <title>Modernize TailwindCSS HTML Admin Template</title>
 
-    <title>hmpanel</title>
 
-    <!-- Fonts -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
-
-    <!-- Icons -->
-    <link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet">
-
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
+    <link href="./assets/css/theme.css" rel="stylesheet" />
 
     <script type="module">
         import hotwiredTurbo from 'https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.4/+esm';
     </script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kaushan+Script&display=swap" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    @livewireStyles
 
     <link href="https://itsmashikur.github.io/assets/font-awesome-6-pro-main/css/all.css" rel="stylesheet" />
 
-    <style>
-        .kaushan-script-regular {
-            font-family: "Kaushan Script", cursive;
-            font-weight: 400;
-            font-style: normal;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet" />
 
-    @livewireStyles
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" />
+
 </head>
 
-<body class="font-sans antialiased">
-    <x-banner />
+<body class="bg-blue-50">
+    <main>
+        <!--start the project-->
+        <div id="main-wrapper" class=" flex">
+            @include('layouts.sidebar')
+            <div class="w-full page-wrapper overflow-hidden">
 
-    <div class="min-h-screen bg-gray-100">
-        @livewire('navigation-menu')
+                @include('layouts.header')
 
-        <!-- Page Heading -->
-        @if (isset($header))
-            <header class="bg-white shadow">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    {{ $header }}
-                </div>
-            </header>
-        @endif
+                <!-- Page Heading -->
 
-        <!-- Page Content -->
-        <main>
-            {{ $slot }}
-        </main>
-    </div>
+                <!-- Main Content -->
+                <main class="h-full overflow-y-auto  max-w-full">
+
+                    {{ $slot }}
+
+                </main>
+                <!-- Main Content End -->
+
+            </div>
+        </div>
+        <!--end of project-->
+    </main>
 
     @stack('modals')
 
+
+
+
+    <script src="./assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="./assets/libs/simplebar/dist/simplebar.min.js"></script>
+    <script src="./assets/libs/iconify-icon/dist/iconify-icon.min.js"></script>
+    <script src="./assets/libs/@preline/dropdown/index.js"></script>
+    <script src="./assets/libs/@preline/overlay/index.js"></script>
+    <script src="./assets/js/sidebarmenu.js"></script>
+    <script src="./assets/libs/apexcharts/dist/apexcharts.min.js"></script>
+
     @livewireScripts
 
-    <script src="https://cdn.jsdelivr.net/gh/livewire/turbolinks@v0.1.x/dist/livewire-turbolinks.js"
-        data-turbolinks-eval="false" data-turbo-eval="false"></script>
+
 
     @stack('scripts')
 
@@ -111,6 +114,7 @@
             })
         })
     </script>
+
 </body>
 
 </html>

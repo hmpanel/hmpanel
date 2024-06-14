@@ -1,10 +1,10 @@
 @props([
-    'bodyClasses' => 'flex-auto p-6',
+    'bodyClasses' => 'card-body',
 ])
 
-<div {{ $attributes->merge(['class' => 'relative flex flex-col rounded-lg bg-white break-words shadow-xl']) }}>
+<div {{ $attributes->merge(['class' => 'card']) }}>
     <div class="{{ $bodyClasses }}">
-        
+
         @if(isset($title))
         <h4 class="text-lg font-bold mb-3">
             {{ $title }}
