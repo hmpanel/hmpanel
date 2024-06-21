@@ -44,49 +44,46 @@ cat << "EOF"
  / / / / / / / / / ____/ /_/ / / / /  __/ /
 /_/ /_/_/ /_/ /_/_/    \__,_/_/ /_/\___/_/
 
-
 EOF
-
 
 
 echo "Installation has been started... Hold on!"
 echo "Installation has been started... Hold on!"f
 
 
-# OS CHECK
-clear
-clear
-echo "${bggreen}${black}${bold}"
-echo "OS check..."
-echo "${reset}"
-sleep 1s
+# # OS CHECK
+# clear
+# clear
+# echo "${bggreen}${black}${bold}"
+# echo "OS check..."
+# echo "${reset}"
+# sleep 1s
 
-ID=$(grep -oP '(?<=^ID=).+' /etc/os-release | tr -d '"')
-VERSION=$(grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"')
-if [ "$ID" = "ubuntu" ]; then
-    case $VERSION in
-        20.04)
-            break
-            ;;
-        *)
-            echo "${bgred}${white}${bold}"
-            echo "HmPanel requires Linux Ubuntu 20.04 LTS"
-            echo "${reset}"
-            exit 1;
-            break
-            ;;
-    esac
-else
-    echo "${bgred}${white}${bold}"
-    echo "HmPanel requires Linux Ubuntu 20.04 LTS"
-    echo "${reset}"
-    exit 1
-fi
-
+# ID=$(grep -oP '(?<=^ID=).+' /etc/os-release | tr -d '"')
+# VERSION=$(grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"')
+# if [ "$ID" = "ubuntu" ]; then
+#     case $VERSION in
+#         20.04)
+#             break
+#             ;;
+#         *)
+#             echo "${bgred}${white}${bold}"
+#             echo "HmPanel requires Linux Ubuntu 20.04 LTS"
+#             echo "${reset}"
+#             exit 1;
+#             break
+#             ;;
+#     esac
+# else
+#     echo "${bgred}${white}${bold}"
+#     echo "HmPanel requires Linux Ubuntu 20.04 LTS"
+#     echo "${reset}"
+#     exit 1
+# fi
 
 
 # ROOT CHECK
-clear
+
 clear
 echo "${bggreen}${black}${bold}"
 echo "Permission check..."
