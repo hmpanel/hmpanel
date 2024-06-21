@@ -618,8 +618,12 @@ sudo chmod -R 775 /var/www/html/storage
 sudo chmod -R o+w /var/www/html/bootstrap/cache
 sudo chmod -R 775 /var/www/html/bootstrap/cache
 
-sudo chmod -R 777 /var/www/html
+# sudo chmod -R 777 /var/www/html
 sudo chown -R www-data:hmpanel /var/www/html
+
+# build assets
+cd /var/www/html && npm install
+cd /var/www/html && npm run build
 
 # LAST STEPS
 clear
