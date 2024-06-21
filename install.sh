@@ -51,6 +51,9 @@ echo "Installation has been started... Hold on!"
 echo "Installation has been started... Hold on!"f
 
 
+# wait 3 seconds
+sleep 3
+
 # # OS CHECK
 # clear
 # clear
