@@ -40,7 +40,7 @@ class NewSiteSSH implements ShouldQueue
         \Log::info(config('app.url'));
 
         $ssh = new SSH2('127.0.0.1', 22);
-        $ssh->login('root', 'password');
+        $ssh->login('hmpanel', 'password');
         $ssh->setTimeout(360);
         $ssh->exec('echo '.$this->password.' | sudo -S sudo unlink newsite');
         $ssh->exec('echo '.$this->password.' | sudo -S sudo wget '.config('app.url').'/sh/newsite');
