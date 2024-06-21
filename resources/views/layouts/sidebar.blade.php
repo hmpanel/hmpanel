@@ -79,14 +79,16 @@
                         </li>
                     @endcan
 
-                    @can('view-any', App\Models\FtpAccount::class)
+                    {{-- @can('view-any', App\Models\FtpAccount::class)
                         <li class="sidebar-item">
                             <a class="sidebar-link gap-3 py-2 px-3  rounded-md w-full flex items-center hover:text-blue-600 hover:bg-blue-500"
                                 href="{{ route('ftp-accounts.index') }}">
                                 <i class="material-symbols-outlined mr-2 text-xl !font-light">smb_share</i> <span>FTP Accounts</span>
                             </a>
                         </li>
-                    @endcan
+                    @endcan --}}
+
+
                     @can('view-any', App\Models\SshAccess::class)
                         <li class="sidebar-item">
                             <a class="sidebar-link gap-3 py-2 px-3  rounded-md w-full flex items-center hover:text-blue-600 hover:bg-blue-500"
@@ -95,7 +97,7 @@
                             </a>
                         </li>
                     @endcan
-
+{{--
 
                     <li class="text-xs font-bold mb-4 mt-8">
                         <span>EXTRA</span>
@@ -114,7 +116,7 @@
                             href="/terminal">
                             <i class="material-symbols-outlined mr-2 text-xl !font-light">cloud</i> <span>Cloud Backup</span>
                         </a>
-                    </li>
+                    </li> --}}
 
 
                     <li class="text-xs font-bold mb-4 mt-8">

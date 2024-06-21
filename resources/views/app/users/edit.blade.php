@@ -1,9 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            @lang('crud.users.edit_title')
-        </h2>
-    </x-slot>
+        @lang('crud.users.edit_title')    </x-slot>
 
     <div class="container full-container py-5 flex flex-col gap-6">
         <x-partials.card>

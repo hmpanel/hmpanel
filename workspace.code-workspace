@@ -1,0 +1,30 @@
+{
+    "folders": [
+        {
+            "path": ".",
+            "name": "laravel"
+        },
+        {
+            "path": "./app",
+            "name": "app"
+        },
+        {
+            "path": "./resources",
+            "name": "resources"
+        },
+        {
+            "path": "./database",
+            "name": "database"
+        },
+        {
+            "path": "./routes",
+            "name": "routes"
+        },
+        {
+            "path": "./workspace",
+            "name": "workspace"
+        }
+    ],
+}
+
+

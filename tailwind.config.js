@@ -45,6 +45,8 @@ export default {
                 500: "#5A6A85",
                 600: "#2a3547",
                 700: "#202936",
+                800: "#1a202e",
+                900: "#141a23",
               },
               transparent: "transparent",
               white: "#fff",

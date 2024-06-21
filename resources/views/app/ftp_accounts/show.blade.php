@@ -1,9 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            @lang('crud.ftp_accounts.show_title')
-        </h2>
-    </x-slot>
+        @lang('crud.ftp_accounts.show_title')    </x-slot>
 
 
     <div class="container full-container py-5 flex flex-col gap-6">

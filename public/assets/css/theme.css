@@ -2181,7 +2181,7 @@ select {
 .hs-overlay-backdrop{
     left: 0;
     top: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.397) !important;
     position: fixed;
     height: 100%;
     width: 100%;

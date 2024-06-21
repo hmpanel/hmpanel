@@ -5,6 +5,11 @@
     <!-- Required meta tags -->
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+
     <!-- Favicon icon-->
     <link rel="shortcut icon" type="image/png" href="./assets/images/logos/favicon.png" />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
@@ -28,11 +33,36 @@
 
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet" />
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0" />
+
+    <style>
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loader {
+            border-top-color: #3490dc;
+            animation: spin 1.5s linear infinite;
+        }
+
+    </style>
+
 
 </head>
 
 <body class="bg-blue-50">
+
+    <div id="preloader" class="fixed inset-0 backdrop-blur-sm bg-white/70 flex items-center justify-center z-[2000]">
+        <div class="loader ease-linear rounded-full border-2 border-t-2 border-gray-200 h-20 w-20"></div>
+    </div>
+
     <main>
         <!--start the project-->
         <div id="main-wrapper" class=" flex">
@@ -113,6 +143,22 @@
                 }
             })
         })
+    </script>
+
+    <script>
+        document.addEventListener('turbo:load', () => {
+            const preloader = document.getElementById('preloader');
+            if (preloader) {
+                preloader.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('turbo:before-visit', () => {
+            const preloader = document.getElementById('preloader');
+            if (preloader) {
+                preloader.style.display = 'flex';
+            }
+        });
     </script>
 
 </body>
