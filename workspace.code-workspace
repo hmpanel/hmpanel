@@ -21,8 +21,8 @@
             "name": "routes"
         },
         {
-            "path": "./workspace",
-            "name": "workspace"
+            "path": "./storage",
+            "name": "storage"
         }
     ],
 }

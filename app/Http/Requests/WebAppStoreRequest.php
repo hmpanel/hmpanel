@@ -19,9 +19,14 @@ class WebAppStoreRequest extends FormRequest
      */
     public function rules(): array
     {
+
         return [
             'name' => ['required', 'max:255', 'string'],
-            'path' => ['required', 'max:255', 'string'],
+            'username' => ['required', 'max:255', 'string'],
+            'password' => ['required', 'max:255', 'string'],
+            'database' => ['required', 'max:255', 'string'],
+            'basepath' => ['nullable', 'max:255', 'string'],
+            'php' => ['required', 'max:255', 'string'],      
             'domain_id' => ['required', 'exists:domains,id'],
         ];
     }

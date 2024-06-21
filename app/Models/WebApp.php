@@ -11,7 +11,7 @@ class WebApp extends Model
     use HasFactory;
     use Searchable;
 
-    protected $fillable = ['name', 'path', 'domain_id'];
+    protected $fillable = ['name', 'domain_id', 'username', 'password', 'database', 'basepath', 'php'];
 
     protected $searchableFields = ['*'];
 

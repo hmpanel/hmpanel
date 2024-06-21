@@ -12,16 +12,70 @@
         ></x-inputs.text>
     </x-inputs.group>
 
+
     <x-inputs.group class="w-full">
         <x-inputs.text
-            name="path"
-            label="Path"
-            :value="old('path', ($editing ? $webApp->path : ''))"
+            name="username"
+            label="Username"
+            :value="old('username', ($editing ? $webApp->username : ''))"
             maxlength="255"
-            placeholder="Path"
+            placeholder="Username"
             required
         ></x-inputs.text>
     </x-inputs.group>
+
+
+
+    <x-inputs.group class="w-full">
+        <x-inputs.text
+            name="password"
+            label="Password"
+            :value="old('password', ($editing ? $webApp->password : ''))"
+            maxlength="255"
+            placeholder="Password"
+            required
+        ></x-inputs.text>
+    </x-inputs.group>
+
+
+    <x-inputs.group class="w-full">
+        <x-inputs.text
+            name="database"
+            label="Database"
+            :value="old('database', ($editing ? $webApp->database : ''))"
+            maxlength="255"
+            placeholder="Database"
+            required
+        ></x-inputs.text>
+    </x-inputs.group>
+
+
+    <x-inputs.group class="w-full">
+        <x-inputs.text
+            name="basepath"
+            label="Basepath"
+            :value="old('basepath', ($editing ? $webApp->basepath : ''))"
+            maxlength="255"
+            placeholder="Basepath"
+            required
+        ></x-inputs.text>
+    </x-inputs.group>
+
+ 
+    <x-inputs.group class="w-full">
+        <x-inputs.text
+            name="php"
+            label="Php"
+            :value="old('php', ($editing ? $webApp->php : ''))"
+            maxlength="255"
+            placeholder="Php"
+            required
+        ></x-inputs.text>
+    </x-inputs.group>
+
+
+
+
 
     <x-inputs.group class="w-full">
         <x-inputs.select name="domain_id" label="Domain" required>

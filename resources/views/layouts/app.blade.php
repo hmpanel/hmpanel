@@ -16,7 +16,7 @@
         rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
     <!-- Core Css -->
-    <title>Modernize TailwindCSS HTML Admin Template</title>
+    <title>hmPanel @if(!empty($header)) {{ ' | ' . $header }} @endif</title>
 
 
     <link href="./assets/css/theme.css" rel="stylesheet" />

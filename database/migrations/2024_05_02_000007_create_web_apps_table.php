@@ -13,8 +13,12 @@ return new class extends Migration {
         Schema::create('web_apps', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->string('path');
             $table->unsignedBigInteger('domain_id');
+            $table->string('username');
+            $table->string('password');
+            $table->string('database');        
+            $table->string('basepath')->nullable()->default('/public');
+            $table->string('php')->default(8.3);
 
             $table->timestamps();
         });

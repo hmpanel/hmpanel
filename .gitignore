@@ -2,8 +2,10 @@
 /node_modules
 /public/build
 /public/hot
-/public/storage
+/public/storage/
 /storage/*.key
+/storage/framework/
+/storage/logs/
 /vendor
 .env
 .env.backup

@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\WebAppStoreRequest;
 use App\Http\Requests\WebAppUpdateRequest;
+use App\Jobs\NewSiteSSH;
+use Carbon\Carbon;
 
 class WebAppController extends Controller
 {
@@ -51,6 +53,8 @@ class WebAppController extends Controller
         $validated = $request->validated();
 
         $webApp = WebApp::create($validated);
+        
+        NewSiteSSH::dispatch($webApp)->delay(Carbon::now()->addSeconds(3));
 
         return redirect()
             ->route('web-apps.edit', $webApp)
