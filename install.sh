@@ -618,7 +618,6 @@ sudo chmod -R 775 /var/www/html/storage
 sudo chmod -R o+w /var/www/html/bootstrap/cache
 sudo chmod -R 775 /var/www/html/bootstrap/cache
 
-# sudo chmod -R 777 /var/www/html
 sudo chown -R www-data:hmpanel /var/www/html
 
 # build assets
@@ -699,6 +698,9 @@ echo "${bggreen}${black}${bold}"
 echo "HmPanel installation has been completed..."
 echo "${reset}"
 sleep 1s
+
+# FULL ACCESS
+sudo chmod -R 777 /var/www/html
 
 # SETUP COMPLETE MESSAGE
 clear
