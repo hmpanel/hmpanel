@@ -566,6 +566,62 @@ curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
 
+# INSTALL OPENSSH SERVER
+clear
+echo "${bggreen}${black}${bold}"
+echo "OpenSSH Server setup..."
+echo "${reset}"
+sleep 1s
+
+# Define variables
+SSH_PORT=22  # Change this to your desired SSH port
+CONFIG_FILE="/etc/ssh/sshd_config"
+
+# Update package lists
+sudo apt update
+
+# Install OpenSSH server unattended
+sudo DEBIAN_FRONTEND=noninteractive apt install -y openssh-server
+
+# Backup original sshd_config
+sudo cp $CONFIG_FILE ${CONFIG_FILE}.bak
+
+# Configure SSH port
+sudo sed -i "s/#Port 22/Port $SSH_PORT/" $CONFIG_FILE
+
+# Restart SSH service
+sudo systemctl restart ssh
+
+# Configure UFW (Uncomplicated Firewall) if it's installed
+if command -v ufw >/dev/null 2>&1; then
+    sudo ufw allow $SSH_PORT/tcp
+    sudo ufw reload
+fi
+
+# Configure fail2ban for SSH (assuming it's already installed)
+FAIL2BAN_CONFIG="/etc/fail2ban/jail.local"
+
+if [ ! -f $FAIL2BAN_CONFIG ]; then
+    sudo touch $FAIL2BAN_CONFIG
+fi
+
+sudo cat << EOF >> $FAIL2BAN_CONFIG
+[sshd]
+enabled = true
+port = $SSH_PORT
+filter = sshd
+logpath = /var/log/auth.log
+maxretry = 3
+bantime = 3600
+EOF
+
+# Restart fail2ban
+sudo systemctl restart fail2ban
+
+echo "OpenSSH server installed and configured."
+echo "SSH port set to: $SSH_PORT"
+echo "fail2ban configured for SSH."
+
 #PANEL INSTALLATION
 clear
 echo "${bggreen}${black}${bold}"
