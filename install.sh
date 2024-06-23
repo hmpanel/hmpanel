@@ -359,7 +359,6 @@ sudo apt-get update
 sudo apt-get -y install php8.3-fpm
 sudo apt-get -y install php8.3-common
 sudo apt-get -y install php8.3-curl
-sudo apt-get -y install php8.3-openssl
 sudo apt-get -y install php8.3-bcmath
 sudo apt-get -y install php8.3-mbstring
 sudo apt-get -y install php8.3-tokenizer
@@ -691,6 +690,8 @@ cd /var/www/html/public && unzip phpMyAdmin-5.2.1-all-languages.zip
 rm -rf /var/www/html/public/phpMyAdmin-5.2.1-all-languages.zip
 mv /var/www/html/public/phpMyAdmin-5.2.1-all-languages/ /var/www/html/public/phpmyadmin
 
+sudo chown www-data:hmpanel -R /var/www/html
+sudo chmod -R 750 /var/www/html
 
 # COMPLETE
 clear
@@ -698,9 +699,6 @@ echo "${bggreen}${black}${bold}"
 echo "HmPanel installation has been completed..."
 echo "${reset}"
 sleep 1s
-
-# FULL ACCESS
-sudo chmod -R 777 /var/www/html
 
 # SETUP COMPLETE MESSAGE
 clear
