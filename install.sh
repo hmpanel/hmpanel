@@ -551,24 +551,19 @@ sudo apt-get install -y python3-certbot-nginx
 # NODE
 clear
 echo "${bggreen}${black}${bold}"
-echo "Node/npm setup..."
+echo "Node.js setup (Latest LTS Version)..."
 echo "${reset}"
 sleep 1s
 
-curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
-curl -sL https://deb.nodesource.com/setup16.x | sudo -E bash -
-NODE=/etc/apt/sources.list.d/nodesource.list
-sudo unlink NODE
-sudo touch $NODE
-sudo cat > "$NODE" <<EOF
-deb https://deb.nodesource.com/node_16.x focal main
-deb-src https://deb.nodesource.com/node_16.x focal main
-EOF
+# Install curl if not already installed
 sudo apt-get update
-sudo apt -y install nodejs
-sudo apt -y install npm
+sudo apt-get install -y curl
 
+# Download and run the official Node.js setup script for the latest LTS version
+curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
 
+# Install Node.js (npm will be installed automatically)
+sudo apt-get install -y nodejs
 
 
 #PANEL INSTALLATION
