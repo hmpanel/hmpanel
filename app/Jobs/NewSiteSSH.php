@@ -45,7 +45,7 @@ class NewSiteSSH implements ShouldQueue
         $ssh->exec('echo '.$this->password.' | sudo -S sudo unlink newsite');
         $ssh->exec('echo '.$this->password.' | sudo -S sudo wget '.config('app.url').'/sh/newsite');
         $ssh->exec('echo '.$this->password.' | sudo -S sudo dos2unix newsite');
-        $ssh->exec('echo '.$this->password.' | sudo -S sudo bash newsite -dbr '.$this->site->database.' -u '.$this->site->username.' -p '.$this->site->password.' -dbp '.$this->site->database.' -php '.$this->site->php.' -id '.$this->site->id.' -d '.$this->site->domain->name.' -r '.config('app.url').' -b '.$this->site->basepath);
+        $ssh->exec('echo '.$this->password.' | sudo -S sudo bash newsite -dbr '.$this->password.' -u '.$this->site->username.' -p '.$this->site->password.' -dbp '.$this->site->database.' -php '.$this->site->php.' -id '.$this->site->id.' -d '.$this->site->domain->name.' -r '.config('app.url').' -b '.$this->site->basepath);
         $ssh->exec('exit');
 
         \Log::info('New Site SSH Job Done');

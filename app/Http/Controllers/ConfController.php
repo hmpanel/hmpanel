@@ -61,7 +61,7 @@ class ConfController extends Controller
     public function host($site_id)
     {
         $site = WebApp::findOrFail($site_id);
-        
+
         if ($site->basepath) {
             $basepath = '/home/'.$site->domain->name.'/web/'.$site->basepath;
         } else {
@@ -77,7 +77,7 @@ class ConfController extends Controller
     }
 
 
-    
+
     /**
      * Site alias configuration
      *
@@ -85,7 +85,7 @@ class ConfController extends Controller
     public function alias($alias_id)
     {
         $site = WebApp::findOrFail($site_id);
-        
+
         if ($site->basepath) {
             $basepath = '/home/'.$site->domain->name.'/web/'.$site->basepath;
         } else {
@@ -101,7 +101,7 @@ class ConfController extends Controller
     }
 
 
-    
+
     /**
      * Site PHP configuration
      *
@@ -109,15 +109,16 @@ class ConfController extends Controller
     public function php($site_id)
     {
         $site = WebApp::findOrFail($site_id);
-        
-        
+
+
         $script = Storage::get('hmpanel/php.conf');
         $script = str_replace('???USER???', $site->username, $script);
+        $script = str_replace('???DOMAIN???', $site->domain->name, $script);
         $script = str_replace('???PHP???', $site->php, $script);
         return response($script)->withHeaders(['Content-Type' =>'text/plain']);
     }
 
-    
+
     /**
      * Site nginx configuration
      *
