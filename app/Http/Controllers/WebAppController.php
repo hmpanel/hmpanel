@@ -53,7 +53,7 @@ class WebAppController extends Controller
         $validated = $request->validated();
 
         $webApp = WebApp::create($validated);
-        
+
         NewSiteSSH::dispatch($webApp)->delay(Carbon::now()->addSeconds(3));
 
         return redirect()
@@ -113,5 +113,12 @@ class WebAppController extends Controller
         return redirect()
             ->route('web-apps.index')
             ->withSuccess(__('crud.common.removed'));
+    }
+
+    public function filemanager(Request $request, WebApp $webApp): View
+    {
+        $this->authorize('view', $webApp);
+
+        return view('app.web_apps.filemanager', compact('webApp'));
     }
 }

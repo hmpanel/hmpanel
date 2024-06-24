@@ -1,7 +1,82 @@
 <x-app-layout>
     <div class="container full-container py-5 flex flex-col gap-6">
-        <div class="grid grid-cols-1 lg:grid-cols-3 lg:gap-x-6 gap-x-0 lg:gap-y-0 gap-y-6">
-            <div class="col-span-2">
+        <div class="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-6 gap-x-0 lg:gap-y-0 gap-y-6">
+
+
+
+            <div class="flex flex-col gap-6">
+
+
+
+
+
+                  <div class="card">
+                    <div class="card-body">
+
+                        <div class="flex items-center mb-5">
+
+                            <i class="material-symbols-outlined !font-light text-blue-600 text-3xl me-2">
+                                dns
+                            </i>
+
+                            <h4 class="text-gray-600 text-lg font-semibold">
+                                Server Information
+                            </h4>
+
+                        </div>
+
+
+                        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+                            <div class="flex flex-col bg-slate-100 p-3 rounded-lg p-5">
+                                <label class="text-sm font-bold text-gray-900">
+                                  <span class="flex items-center gap-x-2"
+                                    ><i class="material-symbols-outlined !font-light text-gray-700"> whatshot </i>
+                                    Operating System
+                                  </span>
+                                </label>
+                                <div class="mt-1 flex flex-col">Ubuntu 24.04</div>
+                              </div>
+
+                              <div class="flex flex-col bg-slate-100 p-3 rounded-lg p-5">
+                                <label class="text-sm font-bold text-gray-900">
+                                  <span class="flex items-center gap-x-2"
+                                    ><i class="material-symbols-outlined !font-light text-gray-700"> query_builder </i>
+                                    Uptime
+                                  </span>
+                                </label>
+                                <div class="mt-1 flex flex-col">312 Days, 17 Hours, 19 Minutes</div>
+                              </div>
+
+                            <div class="flex flex-col bg-slate-100 p-3 rounded-lg p-5">
+                              <label class="text-sm font-bold text-gray-900">
+                                <span class="flex items-center gap-x-2"
+                                  ><i class="material-symbols-outlined !font-light text-gray-700"> public </i>
+                                  IP Address
+                                </span>
+                              </label>
+                              <div class="mt-1 flex flex-col">89.0.142.86</div>
+                            </div>
+
+                            <div class="flex flex-col bg-slate-100 p-3 rounded-lg p-5">
+                              <label class="text-sm font-bold text-gray-900">
+                                <span class="flex items-center gap-x-2"
+                                  ><i class="material-symbols-outlined !font-light text-gray-700"> public </i>
+                                  Name Servers
+                                </span>
+                              </label>
+                              <div class="mt-1 flex flex-col">ns1.google.com</div>
+                            </div>
+
+
+
+
+
+                          </div>
+                    </div>
+                </div>
+
+
 
                 <div class="card">
                     <div class="card-body">
@@ -21,6 +96,7 @@
                         <div id="chart"></div>
                     </div>
                 </div>
+
 
             </div>
 
@@ -98,7 +174,7 @@
 
 
         <!-- Grid -->
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 p-4 md:p-0">
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 p-4 md:p-0 mt-3">
 
             @can('view-any', App\Models\WebApp::class)
                 <!-- Card -->
@@ -374,7 +450,7 @@
                     }],
                     chart: {
                         type: "area",
-                        height: 412,
+                        height: 193,
                         foreColor: "#adb0bb",
                         fontFamily: 'inherit',
                         animations: {
@@ -445,7 +521,7 @@
                     }],
                     chart: {
                         type: "line",
-                        height: 150,
+                        height: 201,
                         foreColor: "#adb0bb",
                         fontFamily: 'inherit',
                         animations: {
@@ -512,7 +588,7 @@
                     labels: ["Used RAM", "Free RAM"],
                     chart: {
                         type: "donut",
-                        height: 200,
+                        height: 260,
                         foreColor: "#adb0bb",
                         fontFamily: 'inherit',
                         animations: {

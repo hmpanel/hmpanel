@@ -68,11 +68,21 @@
                                         align-middle
                                     ">
                                         @can('update', $webApp)
+
                                             <a href="{{ route('web-apps.edit', $webApp) }}" class="mr-1">
                                                 <button type="button" class="button">
                                                     <i class="fa-duotone fa-pen-to-square"></i>
                                                 </button>
                                             </a>
+
+                                            {{-- file manager --}}
+                                            <a href="{{ route('filemanager', $webApp) }}" class="mr-1">
+                                                <button type="button" class="button">
+                                                    <i class="fa-duotone fa-folder-open"></i>
+                                                </button>
+                                            </a>
+
+
                                             @endcan @can('view', $webApp)
                                             <a href="{{ route('web-apps.show', $webApp) }}" class="mr-1">
                                                 <button type="button" class="button">

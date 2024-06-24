@@ -41,6 +41,7 @@ Route::prefix('/')
         Route::resource('ftp-accounts', FtpAccountController::class);
         Route::resource('ssh-accesses', SshAccessController::class);
         Route::resource('users', UserController::class);
+        Route::get('filemanager', [WebAppController::class, 'filemanager'])->name('filemanager');
     });
 
 Route::prefix('/sh')->group(function () {
