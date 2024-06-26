@@ -9,23 +9,21 @@ class FileManager extends Component
 {
     public $directories = [];
     public $files = [];
-
     public $currentPath = '/var/www/html/';
-
     public $expandedFolders = [];
     public $isLoading = false;
 
     public function mount()
     {
         $this->listDirectories();
-        $this->listFiles($this->currentPath);
+        $this->listFiles();
     }
 
     public function listDirectories()
     {
         $this->isLoading = true;
         $ssh = $this->getSSHConnection();
-        $result = $ssh->exec("find {$this->currentPath} -maxdepth 1 -type d");
+        $result = $ssh->exec("find {$this->currentPath} -type d");
         $dirs = explode("\n", trim($result));
         $this->directories = $this->buildDirectoryTree($dirs);
         $this->isLoading = false;
@@ -38,50 +36,22 @@ class FileManager extends Component
             unset($this->expandedFolders[$path]);
         } else {
             $this->expandedFolders[$path] = true;
-            $this->loadSubdirectories($path);
         }
         $this->isLoading = false;
-    }
-
-    public function loadSubdirectories($path)
-    {
-        $ssh = $this->getSSHConnection();
-        $result = $ssh->exec("find {$path} -mindepth 1 -maxdepth 1 -type d ! -name .");
-        $dirs = explode("\n", trim($result));
-        $subdirs = array_filter($this->buildDirectoryTree($dirs), function ($dir) use ($path) {
-            return strpos($dir['path'], $path) === 0;
-        });
-        $this->updateDirectoryStructure($path, $subdirs);
-    }
-
-    private function updateDirectoryStructure($path, $subdirs)
-    {
-        $parts = explode('/', trim(substr($path, strlen($this->currentPath)), '/'));
-        $current = &$this->directories;
-        foreach ($parts as $part) {
-            if (!isset($current[$part])) {
-                $current[$part] = ['name' => $part, 'path' => $path, 'children' => []];
-            }
-            $current = &$current[$part]['children'];
-        }
-        $current = array_merge($current, $subdirs);
     }
 
     public function openDirectory($path)
     {
         $this->isLoading = true;
-
-        $this->currentPath = $path;
-
-        $this->listFiles($path);
-
+        $this->currentPath = rtrim($path, '/') . '/';
+        $this->listFiles();
         $this->isLoading = false;
     }
 
-    public function listFiles($path)
+    public function listFiles()
     {
         $ssh = $this->getSSHConnection();
-        $result = $ssh->exec("ls -la $path");
+        $result = $ssh->exec("ls -la " . escapeshellarg($this->currentPath));
         $lines = explode("\n", trim($result));
         array_shift($lines); // Remove the total line
 
@@ -113,16 +83,23 @@ class FileManager extends Component
     {
         $tree = [];
         foreach ($dirs as $dir) {
-            if ($dir === $this->currentPath) continue; // Skip the root directory
-            $path = substr($dir, strlen($this->currentPath));
-            $parts = explode('/', trim($path, '/'));
-            $name = end($parts);
-            $fullPath = $dir . '/';
-            $tree[$name] = [
-                'name' => $name,
-                'path' => $fullPath,
-                'children' => [],
-            ];
+            if ($dir === $this->currentPath) continue;
+            $path = $dir . '/';
+            $relativePath = substr($path, strlen($this->currentPath));
+            $parts = explode('/', trim($relativePath, '/'));
+            $current = &$tree;
+            $fullPath = $this->currentPath;
+            foreach ($parts as $part) {
+                $fullPath .= $part . '/';
+                if (!isset($current[$part])) {
+                    $current[$part] = [
+                        'name' => $part,
+                        'path' => $fullPath,
+                        'children' => [],
+                    ];
+                }
+                $current = &$current[$part]['children'];
+            }
         }
         return $tree;
     }
