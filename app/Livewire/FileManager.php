@@ -13,6 +13,10 @@ class FileManager extends Component
     public $expandedFolders = [];
     public $isLoading = false;
 
+    public $showEditorModal = false;
+    public $editableFileContent = '';
+    public $editingFilePath = '';
+
     public function mount()
     {
         $this->listDirectories();
@@ -51,22 +55,24 @@ class FileManager extends Component
     public function listFiles()
     {
         $ssh = $this->getSSHConnection();
-        $result = $ssh->exec("ls -la " . escapeshellarg($this->currentPath));
+        $result = $ssh->exec('ls -la ' . escapeshellarg($this->currentPath));
         $lines = explode("\n", trim($result));
         array_shift($lines); // Remove the total line
 
-        $this->files = array_filter(array_map(function ($line) {
-            $parts = preg_split('/\s+/', $line, 9);
-            if (count($parts) >= 9 && $parts[8] !== '.' && $parts[8] !== '..') {
-                return [
-                    'permissions' => $parts[0],
-                    'name' => $parts[8],
-                    'size' => $parts[4],
-                    'modified' => $parts[5] . ' ' . $parts[6] . ' ' . $parts[7],
-                    'isDirectory' => $parts[0][0] === 'd',
-                ];
-            }
-        }, $lines));
+        $this->files = array_filter(
+            array_map(function ($line) {
+                $parts = preg_split('/\s+/', $line, 9);
+                if (count($parts) >= 9 && $parts[8] !== '.' && $parts[8] !== '..') {
+                    return [
+                        'permissions' => $parts[0],
+                        'name' => $parts[8],
+                        'size' => $parts[4],
+                        'modified' => $parts[5] . ' ' . $parts[6] . ' ' . $parts[7],
+                        'isDirectory' => $parts[0][0] === 'd',
+                    ];
+                }
+            }, $lines),
+        );
 
         usort($this->files, function ($a, $b) {
             if ($a['isDirectory'] && !$b['isDirectory']) {
@@ -83,7 +89,9 @@ class FileManager extends Component
     {
         $tree = [];
         foreach ($dirs as $dir) {
-            if ($dir === $this->currentPath) continue;
+            if ($dir === $this->currentPath) {
+                continue;
+            }
             $path = $dir . '/';
             $relativePath = substr($path, strlen($this->currentPath));
             $parts = explode('/', trim($relativePath, '/'));
@@ -110,8 +118,55 @@ class FileManager extends Component
         if (!$ssh->login('hmpanel', 'password')) {
             throw new \Exception('Login failed');
         }
+        //run as root
+        $ssh->exec('sudo -s');
+
         return $ssh;
     }
+
+    public function openFileEditor($filePath)
+    {
+        $editableExtensions = ['.php', '.html', '.js', '.css', '.txt', '.env', '.json', '.xml', '.md', '.yml', '.yaml'];
+        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+        if (!in_array('.' . $extension, $editableExtensions)) {
+            $this->dispatch('show-toast', ['message' => 'This file type is not editable.', 'type' => 'error']);
+            return;
+        }
+
+        $ssh = $this->getSSHConnection();
+        $content = $ssh->exec('cat ' . escapeshellarg($filePath));
+
+        $this->editableFileContent = $content;
+        $this->editingFilePath = $filePath;
+        $this->showEditorModal = true;
+    }
+
+    public function saveFile()
+    {
+        $this->dispatch('getEditorContent');
+
+        $ssh = $this->getSSHConnection();
+        $tempFile = tempnam(sys_get_temp_dir(), 'ssh_edit_');
+        file_put_contents($tempFile, $this->editableFileContent);
+
+        $ssh->put($this->editingFilePath, file_get_contents($tempFile));
+        unlink($tempFile);
+
+        $this->showEditorModal = false;
+        $this->dispatch('show-toast', ['message' => 'File saved successfully.', 'type' => 'success']);
+    }
+
+    public function updatedShowEditorModal()
+    {
+        if ($this->showEditorModal) {
+            $this->dispatch('initializeAceEditor', $this->editableFileContent);
+        } else {
+            $this->editableFileContent = '';
+            $this->editingFilePath = '';
+        }
+    }
+
 
     public function render()
     {

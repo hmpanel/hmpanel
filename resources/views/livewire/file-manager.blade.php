@@ -69,7 +69,13 @@
                                         <td class="px-6 py-4">{{ $file['permissions'] }}</td>
                                         <td class="px-6 py-4">{{ $file['size'] }}</td>
                                         <td class="px-6 py-4">
-                                            <!-- Add your action buttons here -->
+                                            @if (!$file['isDirectory'])
+                                                <button
+                                                    wire:click="openFileEditor('{{ $currentPath . $file['name'] }}')"
+                                                    class="text-blue-600 hover:text-blue-800">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </button>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
@@ -77,163 +83,89 @@
                         </table>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ace Editor Modal -->
+    @if ($showEditorModal)
+        <div class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                <div
+                    class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                            Editing: {{ basename($editingFilePath) }}
+                        </h3>
+                        <div class="mt-2">
+                            <div id="editor" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button wire:click="saveFile" type="button"
+                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                            Save
+                        </button>
+                        <button wire:click="$set('showEditorModal', false)" type="button"
+                            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Toast Notification -->
+    <div x-data="{ show: false, message: '', type: 'success' }"
+        x-on:show-toast.window="show = true; message = $event.detail.message; type = $event.detail.type; setTimeout(() => { show = false }, 3000)"
+        x-show="show" x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform scale-90" x-transition:enter-end="opacity-100 transform scale-100"
+        x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 transform scale-100"
+        x-transition:leave-end="opacity-0 transform scale-90"
+        class="fixed bottom-5 right-5 bg-white border-t-4 rounded-b text-teal-900 px-4 py-3 shadow-md" role="alert"
+        :class="{ 'border-green-500': type === 'success', 'border-red-500': type === 'error' }">
+        <div class="flex">
+            <div class="py-1"><svg class="fill-current h-6 w-6 text-teal-500 mr-4" xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20">
+                    <path
+                        d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
+                </svg></div>
+            <div>
+                <p class="font-bold" x-text="message"></p>
             </div>
         </div>
     </div>
 </div>
 
+@push('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+    <script>
+        document.addEventListener('livewire:load', function() {
+            let editor;
 
+            Livewire.on('initializeAceEditor', function(content) {
+                if (!editor) {
+                    editor = ace.edit("editor");
+                    editor.setTheme("ace/theme/monokai");
+                    editor.session.setMode("ace/mode/php");
+                }
+                editor.setValue(content, -1);
+            });
 
+            Livewire.on('showEditorModal', function() {
+                if (editor) {
+                    editor.resize();
+                }
+            });
 
-
-
-{{--
-
-
-
-<div class="file-manager-container">
-    <div class="container full-container py-5 flex flex-col gap-6">
-        <div class="flex-1 flex flex-col bg-custom-gray dark:bg-gray-900 overflow-hidden rounded-lg shadow relative">
-
-
-            <div class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 p-2 flex items-center space-x-1">
-                <button @click="sidebarOpen = !sidebarOpen"
-                    class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-xs mr-2">
-                    <i class="fas fa-times" :class="sidebarOpen ? 'fa-times' : 'fa-bars'"></i>
-                </button>
-                <button class="px-2 py-1 bg-custom-blue text-white rounded hover:bg-blue-600 text-xs font-medium">
-                    <i class="fas fa-plus mr-1"></i> Add file
-                </button>
-                <button class="px-2 py-1 bg-custom-blue text-white rounded hover:bg-blue-600 text-xs font-medium">
-                    <i class="fas fa-folder-plus mr-1"></i> Add folder
-                </button>
-                <button
-                    class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-xs">
-                    <i class="fas fa-upload mr-1"></i> Upload
-                </button>
-                <button
-                    class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-xs">
-                    <i class="fas fa-copy mr-1"></i> Copy
-                </button>
-                <button
-                    class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-xs">
-                    <i class="fas fa-arrow-right mr-1"></i> Move
-                </button>
-                <button
-                    class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-xs">
-                    <i class="fas fa-download mr-1"></i> Download
-                </button>
-                <button
-                    class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-xs">
-                    <i class="fas fa-edit mr-1"></i> Rename
-                </button>
-                <button
-                    class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-xs">
-                    <i class="fas fa-trash-alt mr-1"></i> Delete
-                </button>
-                <button
-                    class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-xs">
-                    <i class="fas fa-archive mr-1"></i> Archive
-                </button>
-                <button
-                    class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-xs">
-                    <i class="fas fa-key mr-1"></i> Permission
-                </button>
-                <button
-                    class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-xs">
-                    <i class="fas fa-ellipsis-h"></i>
-                </button>
-                <div class="flex-grow"></div>
-                <button @click="darkMode = !darkMode" class="text-gray-500 dark:text-gray-400 mr-2">
-                    <i class="fas fa-moon" :class="darkMode ? 'fa-sun' : 'fa-moon'"></i>
-                </button>
-                <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
-                    <i class="fas fa-user"></i>
-                </div>
-            </div>
-
-
-
-            <div class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 p-2 flex items-center space-x-2">
-                <button class="p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-                <button class="p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-                    <i class="fas fa-arrow-up"></i>
-                </button>
-                <button class="p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
-                <div
-                    class="flex-1 bg-gray-100 dark:bg-gray-700 rounded px-3 py-1 text-sm text-gray-600 dark:text-gray-300 flex items-center">
-                    <i class="fas fa-folder-open mr-2"></i>
-                    <span>Path:/public_html/files/Web assets/</span>
-                </div>
-                <div class="relative">
-                    <input type="text" placeholder="Search"
-                        class="bg-gray-100 dark:bg-gray-700 rounded px-3 py-1 text-sm text-gray-600 dark:text-gray-300 pr-8">
-                    <i class="fas fa-search absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                </div>
-                <button class="p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-                    <i class="fas fa-th-large"></i>
-                </button>
-                <button class="p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
-
-            <div class="flex h-[30rem]">
-                <!-- Folder tree -->
-                <div class="w-1/4 border-r bg-white p-4 overflow-y-auto">
-                    <ul class="text-sm">
-                        @include('livewire.partials._directory_tree', ['directories' => $directories])
-                    </ul>
-                </div>
-
-                <!-- File list -->
-                <div class="flex-1">
-                    <div class="overflow-x-auto max-h-[30rem]">
-                        <table class="w-full bg-white dark:bg-gray-800 shadow-md">
-                            <thead class="bg-gray-50 dark:bg-gray-700">
-                                <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    <th class="px-6 py-3">Name</th>
-                                    <th class="px-6 py-3">Last modified</th>
-                                    <th class="px-6 py-3">Permission</th>
-                                    <th class="px-6 py-3">Size</th>
-                                    <th class="px-6 py-3">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                                @foreach ($files as $file)
-                                    <tr class="text-sm text-gray-900 dark:text-gray-100">
-                                        <td class="px-6 py-4">
-                                            @if ($file['isDirectory'])
-                                                <i class="fas fa-folder text-yellow-500 mr-2"></i>
-                                                <span
-                                                    wire:click="openDirectory('{{ $currentPath . $file['name'] . '/' }}')"
-                                                    class="cursor-pointer">{{ $file['name'] }}</span>
-                                            @else
-                                                <i class="fas fa-file text-blue-500 mr-2"></i>
-                                                {{ $file['name'] }}
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4">{{ $file['modified'] }}</td>
-                                        <td class="px-6 py-4">{{ $file['permissions'] }}</td>
-                                        <td class="px-6 py-4">{{ $file['size'] }}</td>
-                                        <td class="px-6 py-4">
-                                            <!-- Add your action buttons here -->
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div> --}}
+            Livewire.on('getEditorContent', function() {
+                if (editor) {
+                    @this.set('editableFileContent', editor.getValue());
+                }
+            });
+        });
+    </script>
+@endpush
