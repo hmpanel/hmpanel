@@ -9,7 +9,9 @@ class FileManager extends Component
 {
     public $directories = [];
     public $files = [];
+
     public $currentPath = '/var/www/html/';
+
     public $expandedFolders = [];
     public $isLoading = false;
 
@@ -44,10 +46,11 @@ class FileManager extends Component
     public function loadSubdirectories($path)
     {
         $ssh = $this->getSSHConnection();
-        $result = $ssh->exec("find {$path} -maxdepth 1 -type d");
+        $result = $ssh->exec("find {$path} -mindepth 1 -maxdepth 1 -type d ! -name .");
         $dirs = explode("\n", trim($result));
-        $subdirs = $this->buildDirectoryTree($dirs);
-
+        $subdirs = array_filter($this->buildDirectoryTree($dirs), function ($dir) use ($path) {
+            return strpos($dir['path'], $path) === 0;
+        });
         $this->updateDirectoryStructure($path, $subdirs);
     }
 
@@ -61,14 +64,17 @@ class FileManager extends Component
             }
             $current = &$current[$part]['children'];
         }
-        $current = $subdirs;
+        $current = array_merge($current, $subdirs);
     }
 
     public function openDirectory($path)
     {
         $this->isLoading = true;
+
         $this->currentPath = $path;
+
         $this->listFiles($path);
+
         $this->isLoading = false;
     }
 
@@ -79,11 +85,10 @@ class FileManager extends Component
         $lines = explode("\n", trim($result));
         array_shift($lines); // Remove the total line
 
-        $this->files = [];
-        foreach ($lines as $line) {
+        $this->files = array_filter(array_map(function ($line) {
             $parts = preg_split('/\s+/', $line, 9);
-            if (count($parts) >= 9) {
-                $this->files[] = [
+            if (count($parts) >= 9 && $parts[8] !== '.' && $parts[8] !== '..') {
+                return [
                     'permissions' => $parts[0],
                     'name' => $parts[8],
                     'size' => $parts[4],
@@ -91,7 +96,17 @@ class FileManager extends Component
                     'isDirectory' => $parts[0][0] === 'd',
                 ];
             }
-        }
+        }, $lines));
+
+        usort($this->files, function ($a, $b) {
+            if ($a['isDirectory'] && !$b['isDirectory']) {
+                return -1;
+            } elseif (!$a['isDirectory'] && $b['isDirectory']) {
+                return 1;
+            } else {
+                return strcmp($a['name'], $b['name']);
+            }
+        });
     }
 
     private function buildDirectoryTree($dirs)
