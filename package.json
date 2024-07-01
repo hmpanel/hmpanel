@@ -16,8 +16,6 @@
         "vite": "^5.2.13"
     },
     "dependencies": {
-        "@alpinejs/focus": "^3.14.0",
-        "alpinejs": "^3.14.0",
         "loadash": "^1.0.0",
         "lodash": "^4.17.21",
         "preline": "^2.3.0"

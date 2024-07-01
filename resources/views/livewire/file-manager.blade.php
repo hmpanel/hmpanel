@@ -1,171 +1,300 @@
-<div class="file-manager-container">
-    <div class="container full-container py-5 flex flex-col gap-6">
-        <div class="flex-1 flex flex-col bg-custom-gray dark:bg-gray-900 overflow-hidden rounded-lg shadow relative">
+<div x-data="{
+    initNotyf() {
+        this.notyf = new Notyf({ dismissible: true });
+    }
+}" x-init="initNotyf()"
+    @shownotification.window="notyf[$event.detail.type]($event.detail.message)"
+    class="flex h-screen bg-white rounded-2xl shadow">
 
-
-            <div wire:loading>
-                <!-- Loader -->
-                <div
-                    class="absolute inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50 w-full h-full">
-                    <svg aria-hidden="true" class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
-                        viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                            fill="currentColor" />
-                        <path
-                            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                            fill="currentFill" />
+    <!-- Sidebar with Directory Tree -->
+    <div class="w-1/4 bg-white rounded-2xl p-4 shadow-md overflow-y-auto">
+        <h2 class="text-lg font-semibold mb-4">Directory Tree</h2>
+        <ul>
+            <li>
+                <button wire:click="changeDirectory('/')"
+                    class="flex items-center w-full text-left p-2 rounded {{ $activeDirectory === '/' ? 'bg-blue-100' : 'hover:bg-gray-100' }}">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                        </path>
                     </svg>
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
-
-
-            <div class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 p-2 flex items-center space-x-2">
-                <button wire:click="openDirectory('{{ dirname($currentPath) }}')"
-                    class="p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-                    <i class="fas fa-arrow-up"></i>
+                    Root
                 </button>
-                <button wire:click="listDirectories"
-                    class="p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
-                <div
-                    class="flex-1 bg-gray-100 dark:bg-gray-700 rounded px-3 py-1 text-sm text-gray-600 dark:text-gray-300 flex items-center">
-                    <i class="fas fa-folder-open mr-2"></i>
-                    <span>{{ $currentPath }}</span>
-                </div>
-                <!-- ... (keep the search and view buttons as is) ... -->
-            </div>
+            </li>
+            @include('livewire.partials.directory-tree', ['directories' => $directories])
+        </ul>
 
-            <div class="flex h-[30rem]">
-                <!-- Folder tree -->
-                <div class="w-1/4 border-r bg-white p-4 overflow-y-auto">
-                    <ul class="text-sm">
-                        @include('livewire.partials._directory_tree', ['directories' => $directories])
-                    </ul>
-                </div>
-
-                <!-- File list -->
-                <div class="flex-1">
-                    <div class="overflow-x-auto max-h-[30rem]">
-                        <table class="w-full bg-white dark:bg-gray-800 shadow-md">
-                            <!-- ... (keep the table header as is) ... -->
-                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                                @foreach ($files as $file)
-                                    <tr class="text-sm text-gray-900 dark:text-gray-100">
-                                        <td class="px-6 py-4">
-                                            @if ($file['isDirectory'])
-                                                <i class="fas fa-folder text-yellow-500 mr-2"></i>
-                                                <span
-                                                    wire:click="openDirectory('{{ $currentPath . $file['name'] . '/' }}')"
-                                                    class="cursor-pointer">{{ $file['name'] }}</span>
-                                            @else
-                                                <i class="fas fa-file text-blue-500 mr-2"></i>
-                                                {{ $file['name'] }}
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4">{{ $file['modified'] }}</td>
-                                        <td class="px-6 py-4">{{ $file['permissions'] }}</td>
-                                        <td class="px-6 py-4">{{ $file['size'] }}</td>
-                                        <td class="px-6 py-4">
-                                            @if (!$file['isDirectory'])
-                                                <button
-                                                    wire:click="openFileEditor('{{ $currentPath . $file['name'] }}')"
-                                                    class="text-blue-600 hover:text-blue-800">
-                                                    <i class="fas fa-edit"></i> Edit
-                                                </button>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        <!-- Create New Folder -->
+        <div class="mt-6">
+            <h3 class="font-semibold mb-2">Create New Folder</h3>
+            <div class="flex">
+                <input wire:model.defer="newFolderName" type="text" class="flex-grow mr-2 p-2 border rounded"
+                    placeholder="Folder name">
+                <button wire:click="createFolder"
+                    class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Create</button>
             </div>
+            @error('newFolderName')
+                <span class="text-red-500 text-sm">{{ $message }}</span>
+            @enderror
         </div>
     </div>
 
-    <!-- Ace Editor Modal -->
-    @if ($showEditorModal)
-        <div class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                <div
-                    class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                            Editing: {{ basename($editingFilePath) }}
-                        </h3>
-                        <div class="mt-2">
-                            <div id="editor" style="height: 300px;"></div>
-                        </div>
+    <!-- Main Content -->
+    <div class="flex-1 p-6 overflow-y-auto">
+
+        <div class="mb-6 flex justify-between">
+            <h1 class="text-2xl font-bold mb-4">File Manager</h1>
+
+
+            <div>
+                <button>
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+
+
+                <button>
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+            </div>
+        </div>
+
+
+        <!-- Breadcrumbs -->
+        <nav class="text-sm mb-4">
+            <ol class="list-none p-0 inline-flex">
+                <li class="flex items-center">
+                    <button wire:click="changeDirectory('/')" class="text-gray-800 hover:underline">Root</button>
+                </li>
+                @foreach ($breadcrumbs as $breadcrumb)
+                    <li class="flex items-center">
+                        <svg class="w-3 h-3 mx-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        <button wire:click="changeDirectory('{{ $breadcrumb['path'] }}')"
+                            class="text-gray-800 hover:underline">
+                            {{ $breadcrumb['name'] }}
+                        </button>
+                    </li>
+                @endforeach
+            </ol>
+        </nav>
+
+        <!-- File Upload -->
+        <div class="mb-6">
+
+
+            <input type="file" wire:model="uploadedFile" class="mb-2">
+            <button wire:click="uploadFile"
+                class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Upload</button>
+            @error('uploadedFile')
+                <span class="text-red-500 text-sm">{{ $message }}</span>
+            @enderror
+        </div>
+
+        <div class="flex flex-col h-[400px]">
+            <div class="flex-grow overflow-auto">
+                <table class="relative w-full border">
+                    <thead>
+                        <tr class="text-gray-700 uppercase text-sm leading-normal">
+                            <th class="sticky top-0 py-3 px-6 text-left bg-gray-200">Name</th>
+                            <th class="sticky top-0 py-3 px-6 text-left bg-gray-200">Type</th>
+                            <th class="sticky top-0 py-3 px-6 text-left bg-gray-200">Size</th>
+                            <th class="sticky top-0 py-3 px-6 text-left bg-gray-200">Last Modified</th>
+                            <th class="sticky top-0 py-3 px-6 text-right bg-gray-200">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y bg-white">
+                        @foreach ($files as $file)
+                            <tr class="border-b border-gray-200 hover:bg-gray-100">
+                                <td class="py-3 px-6 text-left whitespace-nowrap">
+                                    @if ($renamingFile && $renamingFile['oldPath'] === $file['path'])
+                                        <input wire:model.defer="renamingFile.newName" type="text"
+                                            class="border rounded p-1">
+                                        <button wire:click="renameFile"
+                                            class="text-green-500 hover:underline ml-2">Save</button>
+                                    @else
+                                        @if ($file['type'] === 'directory')
+                                            <button wire:click="changeDirectory('{{ $file['path'] }}')"
+                                                class="text-gray-800 hover:underline">
+
+                                                <i
+                                                    class="material-symbols-outlined mr-2 !font-light text-yellow-500 !text-[18px]">folder</i>
+
+                                                {{ $file['name'] }}
+                                            </button>
+                                        @else
+                                            <i
+                                                class="material-symbols-outlined mr-2 !font-light text-yellow-500 !text-[18px]">insert_drive_file</i>
+
+
+                                            {{ $file['name'] }}
+                                        @endif
+                                    @endif
+                                </td>
+                                <td class="py-3 px-6 text-left">{{ ucfirst($file['type']) }}</td>
+                                <td class="py-3 px-6 text-left">
+                                    @if ($file['type'] === 'file')
+                                        {{ number_format($file['size'] / 1024, 2) }} KB
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td class="py-3 px-6 text-left">
+                                    @if ($file['type'] === 'file')
+                                        {{ date('Y-m-d H:i:s', $file['lastModified']) }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td class="py-3 px-6 text-right">
+                                    <button wire:click="startRenaming('{{ $file['path'] }}')"
+                                        class="text-yellow-500 hover:underline mr-2">Rename</button>
+                                    @if ($file['type'] === 'file')
+                                        <button wire:click="editFile('{{ $file['path'] }}')"
+                                            class="text-yellow-500 hover:underline mr-2">Edit</button>
+                                        @if (pathinfo($file['name'], PATHINFO_EXTENSION) === 'zip')
+                                            <button wire:click="initiateUnzip('{{ $file['path'] }}')"
+                                                class="text-purple-500 hover:underline mr-2">
+                                                <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2">
+                                                    </path>
+                                                </svg>
+                                                Unzip
+                                            </button>
+                                        @endif
+                                    @endif
+                                    <button
+                                        wire:click="{{ $file['type'] === 'file' ? 'deleteFile' : 'deleteFolder' }}('{{ $file['path'] }}')"
+                                        class="text-red-500 hover:underline">Delete</button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+
+
+
+
+        <div class="mt-6">
+            <h3 class="font-semibold mb-2">Create New File</h3>
+            <input wire:model.defer="newFileName" type="text" class="w-full mb-2 p-2 border rounded"
+                placeholder="File name">
+            @error('newFileName')
+                <span class="text-red-500 text-sm">{{ $message }}</span>
+            @enderror
+            <textarea wire:model.defer="newFileContent" class="w-full h-32 mb-2 p-2 border rounded" placeholder="File content"></textarea>
+            @error('newFileContent')
+                <span class="text-red-500 text-sm">{{ $message }}</span>
+            @enderror
+            <button wire:click="createFile" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Create
+                File</button>
+        </div>
+
+        <!-- Edit File Modal -->
+        @if ($isEditModalOpen)
+            <div x-data="editFileModal()" x-init="init" @close-modal.window="closeModal">
+                <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-[999]">
+
+                    <div class="flex justify-end mt-4">
+                        <button @click="saveChanges"
+                            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-2">Save</button>
+                        <button @click="closeModal"
+                            class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Cancel</button>
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button wire:click="saveFile" type="button"
-                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                            Save
-                        </button>
-                        <button wire:click="$set('showEditorModal', false)" type="button"
-                            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                            Cancel
-                        </button>
+
+                    <div class="relative top-20 mx-auto p-5 border w-3/4 shadow-lg rounded-md bg-white">
+                        <h3 class="text-lg font-semibold mb-4">Editing: {{ basename($editingFile['path']) }}</h3>
+
+                        <div x-ref="editor" class="w-full vh-80 mb-4"></div>
+
                     </div>
                 </div>
             </div>
-        </div>
-    @endif
+        @endif
 
-    <!-- Toast Notification -->
-    <div x-data="{ show: false, message: '', type: 'success' }"
-        x-on:show-toast.window="show = true; message = $event.detail.message; type = $event.detail.type; setTimeout(() => { show = false }, 3000)"
-        x-show="show" x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 transform scale-90" x-transition:enter-end="opacity-100 transform scale-100"
-        x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 transform scale-100"
-        x-transition:leave-end="opacity-0 transform scale-90"
-        class="fixed bottom-5 right-5 bg-white border-t-4 rounded-b text-teal-900 px-4 py-3 shadow-md" role="alert"
-        :class="{ 'border-green-500': type === 'success', 'border-red-500': type === 'error' }">
-        <div class="flex">
-            <div class="py-1"><svg class="fill-current h-6 w-6 text-teal-500 mr-4" xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20">
-                    <path
-                        d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
-                </svg></div>
-            <div>
-                <p class="font-bold" x-text="message"></p>
+
+        <!-- Unzip Modal -->
+        @if ($showUnzipModal)
+            <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-[999]">
+                <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                    <h3 class="text-lg font-semibold mb-4">Unzip File</h3>
+                    <p class="mb-4">Unzipping: {{ basename($unzippingFile) }}</p>
+                    <div class="mb-4">
+                        <label for="unzipPath" class="block text-sm font-medium text-gray-700">Unzip to:</label>
+                        <input wire:model.defer="unzipPath" type="text" id="unzipPath"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    </div>
+                    <div class="flex justify-end">
+                        <button wire:click="unzipFile"
+                            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-2">Unzip</button>
+                        <button wire:click="closeUnzipModal"
+                            class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Cancel</button>
+                    </div>
+                </div>
             </div>
-        </div>
+        @endif
+
+
     </div>
 </div>
 
 @push('scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.3/theme/monokai.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/php/php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/mode/multiplex.min.js"></script>
+
+
     <script>
-        document.addEventListener('livewire:load', function() {
-            let editor;
-
-            Livewire.on('initializeAceEditor', function(content) {
-                if (!editor) {
-                    editor = ace.edit("editor");
-                    editor.setTheme("ace/theme/monokai");
-                    editor.session.setMode("ace/mode/php");
+        function editFileModal() {
+            return {
+                editor: null,
+                init() {
+                    this.$nextTick(() => {
+                        if (!this.editor) {
+                            this.editor = CodeMirror(this.$refs.editor, {
+                                lineNumbers: true,
+                                mode: "php",
+                                htmlMode: true,
+                                theme: 'monokai',
+                                lineWrapping: true,
+                                value: @this.editingFile.content
+                            });
+                            this.editor.on('change', () => {
+                                @this.editingFile.content = this.editor.getValue();
+                            });
+                        }
+                    });
+                },
+                saveChanges() {
+                    if (this.editor) {
+                        @this.editingFile.content = this.editor.getValue();
+                        @this.call('updateFile');
+                    }
+                },
+                closeModal() {
+                    @this.call('closeEditModal');
                 }
-                editor.setValue(content, -1);
-            });
-
-            Livewire.on('showEditorModal', function() {
-                if (editor) {
-                    editor.resize();
-                }
-            });
-
-            Livewire.on('getEditorContent', function() {
-                if (editor) {
-                    @this.set('editableFileContent', editor.getValue());
-                }
-            });
-        });
+            }
+        }
     </script>
 @endpush

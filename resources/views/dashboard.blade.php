@@ -1,16 +1,9 @@
 <x-app-layout>
     <div class="container full-container py-5 flex flex-col gap-6">
         <div class="grid grid-cols-1 lg:grid-cols-2 lg:gap-x-6 gap-x-0 lg:gap-y-0 gap-y-6">
-
-
-
             <div class="flex flex-col gap-6">
 
-
-
-
-
-                  <div class="card">
+                <div class="card">
                     <div class="card-body">
 
                         <div class="flex items-center mb-5">
@@ -30,49 +23,50 @@
 
                             <div class="flex flex-col bg-slate-100 p-3 rounded-lg p-5">
                                 <label class="text-sm font-bold text-gray-900">
-                                  <span class="flex items-center gap-x-2"
-                                    ><i class="material-symbols-outlined !font-light text-gray-700"> whatshot </i>
-                                    Operating System
-                                  </span>
+                                    <span class="flex items-center gap-x-2"><i
+                                            class="material-symbols-outlined !font-light text-gray-700"> whatshot </i>
+                                        Operating System
+                                    </span>
                                 </label>
                                 <div class="mt-1 flex flex-col">Ubuntu 24.04</div>
-                              </div>
+                            </div>
 
-                              <div class="flex flex-col bg-slate-100 p-3 rounded-lg p-5">
+                            <div class="flex flex-col bg-slate-100 p-3 rounded-lg p-5">
                                 <label class="text-sm font-bold text-gray-900">
-                                  <span class="flex items-center gap-x-2"
-                                    ><i class="material-symbols-outlined !font-light text-gray-700"> query_builder </i>
-                                    Uptime
-                                  </span>
+                                    <span class="flex items-center gap-x-2"><i
+                                            class="material-symbols-outlined !font-light text-gray-700"> query_builder
+                                        </i>
+                                        Uptime
+                                    </span>
                                 </label>
                                 <div class="mt-1 flex flex-col">312 Days, 17 Hours, 19 Minutes</div>
-                              </div>
-
-                            <div class="flex flex-col bg-slate-100 p-3 rounded-lg p-5">
-                              <label class="text-sm font-bold text-gray-900">
-                                <span class="flex items-center gap-x-2"
-                                  ><i class="material-symbols-outlined !font-light text-gray-700"> public </i>
-                                  IP Address
-                                </span>
-                              </label>
-                              <div class="mt-1 flex flex-col">89.0.142.86</div>
                             </div>
 
                             <div class="flex flex-col bg-slate-100 p-3 rounded-lg p-5">
-                              <label class="text-sm font-bold text-gray-900">
-                                <span class="flex items-center gap-x-2"
-                                  ><i class="material-symbols-outlined !font-light text-gray-700"> public </i>
-                                  Name Servers
-                                </span>
-                              </label>
-                              <div class="mt-1 flex flex-col">ns1.google.com</div>
+                                <label class="text-sm font-bold text-gray-900">
+                                    <span class="flex items-center gap-x-2"><i
+                                            class="material-symbols-outlined !font-light text-gray-700"> public </i>
+                                        IP Address
+                                    </span>
+                                </label>
+                                <div class="mt-1 flex flex-col">89.0.142.86</div>
+                            </div>
+
+                            <div class="flex flex-col bg-slate-100 p-3 rounded-lg p-5">
+                                <label class="text-sm font-bold text-gray-900">
+                                    <span class="flex items-center gap-x-2"><i
+                                            class="material-symbols-outlined !font-light text-gray-700"> public </i>
+                                        Name Servers
+                                    </span>
+                                </label>
+                                <div class="mt-1 flex flex-col">ns1.google.com</div>
                             </div>
 
 
 
 
 
-                          </div>
+                        </div>
                     </div>
                 </div>
 
@@ -427,21 +421,11 @@
 
     @push('scripts')
         <script>
-            document.addEventListener('turbo:load', function() {
-                // Helper function to destroy existing charts
-                function destroyChart(selector) {
-                    const element = document.querySelector(selector);
-                    if (element && element._chartInstance) {
-                        element._chartInstance.destroy();
-                        element._chartInstance = null;
-                    }
-                }
 
-                // Destroy existing charts before creating new ones
-                destroyChart("#chart");
-                destroyChart("#diskchart");
-                destroyChart("#ram-usage-chart");
 
+
+
+                // Helper function to destroy existing chart
 
                 var cpuLoadOptions = {
                     series: [{
@@ -693,7 +677,7 @@
                 // Update the chart every second
                 setInterval(updateChart, 5000);
 
-            });
+
         </script>
     @endpush
 

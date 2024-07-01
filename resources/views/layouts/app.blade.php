@@ -21,9 +21,6 @@
 
     <link href="./assets/css/theme.css" rel="stylesheet" />
 
-    <script type="module">
-        import hotwiredTurbo from 'https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.4/+esm';
-    </script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -73,9 +70,7 @@
 
 <body class="bg-blue-50">
 
-    <div id="preloader" class="fixed inset-0 backdrop-blur-sm bg-white/70 flex items-center justify-center z-[2000]">
-        <div class="loader ease-linear rounded-full border-2 border-t-2 border-gray-200 h-20 w-20"></div>
-    </div>
+
 
     <main>
         <!--start the project-->
@@ -115,6 +110,7 @@
 
     @livewireScripts
 
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
 
 
     @stack('scripts')

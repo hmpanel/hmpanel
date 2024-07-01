@@ -3,170 +3,332 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-use phpseclib3\Net\SSH2;
+use Livewire\WithFileUploads;
+use Livewire\Attributes\Rule;
+use Illuminate\Support\Facades\Storage;
+use ZipArchive;
+
 
 class FileManager extends Component
 {
-    public $directories = [];
-    public $files = [];
-    public $currentPath = '/var/www/html/';
-    public $expandedFolders = [];
-    public $isLoading = false;
+    use WithFileUploads;
 
-    public $showEditorModal = false;
-    public $editableFileContent = '';
-    public $editingFilePath = '';
+    public $currentPath = '/';
+    public $files = [];
+    public $directories = [];
+    public $breadcrumbs = [];
+
+    public $newFolderName = '';
+    public $newFileName = '';
+    public $newFileContent = '';
+    public $editingFile = [
+        'path' => null,
+        'content' => null
+    ];
+    public $renamingFile = null;
+    public $uploadedFile;
+    public $uploadProgress = 0;
+
+    public $isEditModalOpen = false;
+
+    public $activeDirectory = '/';
+
+
+    public $showUnzipModal = false;
+    public $unzippingFile = null;
+    public $unzipPath = '';
+
+    public function initiateUnzip($filePath)
+    {
+        $this->unzippingFile = $filePath;
+        $this->unzipPath = $this->currentPath;
+        $this->showUnzipModal = true;
+    }
+
+    public function closeUnzipModal()
+    {
+        $this->showUnzipModal = false;
+        $this->unzippingFile = null;
+        $this->unzipPath = '';
+    }
+
 
     public function mount()
     {
-        $this->listDirectories();
-        $this->listFiles();
+        $this->loadContents();
+        $this->updateBreadcrumbs();
     }
 
-    public function listDirectories()
+    public function loadContents()
     {
-        $this->isLoading = true;
-        $ssh = $this->getSSHConnection();
-        $result = $ssh->exec("find {$this->currentPath} -type d");
-        $dirs = explode("\n", trim($result));
-        $this->directories = $this->buildDirectoryTree($dirs);
-        $this->isLoading = false;
+        $this->files = collect(Storage::files($this->currentPath))
+            ->map(function ($file) {
+                return [
+                    'name' => basename($file),
+                    'path' => $file,
+                    'size' => Storage::size($file),
+                    'lastModified' => Storage::lastModified($file),
+                    'type' => 'file'
+                ];
+            });
+
+        $directories = collect(Storage::directories($this->currentPath))
+            ->map(function ($directory) {
+                return [
+                    'name' => basename($directory),
+                    'path' => $directory,
+                    'type' => 'directory'
+                ];
+            });
+
+        $this->files = $directories->concat($this->files);
+
+        $this->directories = $this->buildDirectoryTree('/');
+    }
+
+    private function buildDirectoryTree($path)
+    {
+        $directories = collect(Storage::directories($path))
+            ->map(function ($directory) {
+                $relativePath = str_replace(Storage::path(''), '', $directory);
+                return [
+                    'name' => basename($directory),
+                    'path' => $relativePath,
+                    'isExpanded' => str_starts_with($this->currentPath, $relativePath),
+                    'children' => $this->buildDirectoryTree($directory)
+                ];
+            });
+
+        return $directories->toArray();
+    }
+
+    public function updateBreadcrumbs()
+    {
+        $path = '';
+        $this->breadcrumbs = collect(explode('/', $this->currentPath))
+            ->filter()
+            ->map(function ($segment) use (&$path) {
+                $path .= '/' . $segment;
+                return [
+                    'name' => $segment,
+                    'path' => $path
+                ];
+            });
+    }
+
+    public function changeDirectory($path)
+    {
+        $this->currentPath = $path;
+        $this->activeDirectory = $path;
+        $this->loadContents();
+        $this->updateBreadcrumbs();
+    }
+
+    public function goBack()
+    {
+        $parentDir = dirname($this->currentPath);
+        $this->changeDirectory($parentDir === '\\' ? '/' : $parentDir);
     }
 
     public function toggleDirectory($path)
     {
-        $this->isLoading = true;
-        if (isset($this->expandedFolders[$path])) {
-            unset($this->expandedFolders[$path]);
+        $this->directories = $this->updateDirectoryExpansion($this->directories, $path);
+    }
+
+    private function updateDirectoryExpansion($directories, $targetPath)
+    {
+        return array_map(function ($dir) use ($targetPath) {
+            if ($dir['path'] === $targetPath) {
+                $dir['isExpanded'] = !($dir['isExpanded'] ?? false);
+            }
+            if (!empty($dir['children'])) {
+                $dir['children'] = $this->updateDirectoryExpansion($dir['children'], $targetPath);
+            }
+            return $dir;
+        }, $directories);
+    }
+
+
+
+
+
+
+    public function createFolder()
+    {
+        $this->validate([
+            'newFolderName' => 'required|min:1|max:255',
+        ]);
+
+        $newPath = $this->currentPath . '/' . $this->newFolderName;
+        if (Storage::makeDirectory($newPath)) {
+            $this->dispatch('showNotification', ['message' => 'Folder created successfully', 'type' => 'success']);
+            $this->newFolderName = '';
+            $this->loadContents();
         } else {
-            $this->expandedFolders[$path] = true;
+            $this->handleError('Failed to create folder');
         }
-        $this->isLoading = false;
     }
 
-    public function openDirectory($path)
+    public function createFile()
     {
-        $this->isLoading = true;
-        $this->currentPath = rtrim($path, '/') . '/';
-        $this->listFiles();
-        $this->isLoading = false;
+        $this->validate([
+            'newFileName' => 'required|min:1|max:255',
+            'newFileContent' => 'required',
+        ]);
+
+        $newPath = $this->currentPath . '/' . $this->newFileName;
+        if (Storage::put($newPath, $this->newFileContent)) {
+            $this->dispatch('showNotification', ['message' => 'File created successfully', 'type' => 'success']);
+            $this->newFileName = '';
+            $this->newFileContent = '';
+            $this->loadContents();
+        } else {
+            $this->handleError('Failed to create file');
+        }
     }
 
-    public function listFiles()
+    public function editFile($path)
     {
-        $ssh = $this->getSSHConnection();
-        $result = $ssh->exec('ls -la ' . escapeshellarg($this->currentPath));
-        $lines = explode("\n", trim($result));
-        array_shift($lines); // Remove the total line
+        $this->editingFile = [
+            'path' => $path,
+            'content' => Storage::get($path) ?? '',
+        ];
+        $this->isEditModalOpen = true;
+    }
 
-        $this->files = array_filter(
-            array_map(function ($line) {
-                $parts = preg_split('/\s+/', $line, 9);
-                if (count($parts) >= 9 && $parts[8] !== '.' && $parts[8] !== '..') {
-                    return [
-                        'permissions' => $parts[0],
-                        'name' => $parts[8],
-                        'size' => $parts[4],
-                        'modified' => $parts[5] . ' ' . $parts[6] . ' ' . $parts[7],
-                        'isDirectory' => $parts[0][0] === 'd',
-                    ];
-                }
-            }, $lines),
-        );
-
-        usort($this->files, function ($a, $b) {
-            if ($a['isDirectory'] && !$b['isDirectory']) {
-                return -1;
-            } elseif (!$a['isDirectory'] && $b['isDirectory']) {
-                return 1;
+    public function updateFile()
+    {
+        try {
+            if ($this->editingFile && isset($this->editingFile['path']) && isset($this->editingFile['content'])) {
+                Storage::put($this->editingFile['path'], $this->editingFile['content']);
+                $this->closeEditModal();
+                $this->dispatch('showNotification', ['message' => 'File updated successfully', 'type' => 'success']);
             } else {
-                return strcmp($a['name'], $b['name']);
+                throw new \Exception('Invalid file data');
             }
-        });
+        } catch (\Exception $e) {
+            $this->handleError('Error updating file: ' . $e->getMessage());
+        }
     }
 
-    private function buildDirectoryTree($dirs)
+    public function closeEditModal()
     {
-        $tree = [];
-        foreach ($dirs as $dir) {
-            if ($dir === $this->currentPath) {
-                continue;
-            }
-            $path = $dir . '/';
-            $relativePath = substr($path, strlen($this->currentPath));
-            $parts = explode('/', trim($relativePath, '/'));
-            $current = &$tree;
-            $fullPath = $this->currentPath;
-            foreach ($parts as $part) {
-                $fullPath .= $part . '/';
-                if (!isset($current[$part])) {
-                    $current[$part] = [
-                        'name' => $part,
-                        'path' => $fullPath,
-                        'children' => [],
-                    ];
+        $this->isEditModalOpen = false;
+        $this->editingFile = null;
+        $this->loadContents();
+        $this->dispatch('close-modal');
+    }
+
+    public function startRenaming($path)
+    {
+        $this->renamingFile = [
+            'oldPath' => $path,
+            'newName' => basename($path),
+        ];
+    }
+
+    public function renameFile()
+    {
+        try {
+            if ($this->renamingFile) {
+                $newPath = dirname($this->renamingFile['oldPath']) . '/' . $this->renamingFile['newName'];
+                if (Storage::move($this->renamingFile['oldPath'], $newPath)) {
+                    $this->dispatch('showNotification', ['message' => 'File renamed successfully', 'type' => 'success']);
+                    $this->renamingFile = null;
+                    $this->loadContents();
+                } else {
+                    throw new \Exception('Failed to rename file');
                 }
-                $current = &$current[$part]['children'];
             }
+        } catch (\Exception $e) {
+            $this->handleError('Error renaming file: ' . $e->getMessage());
         }
-        return $tree;
     }
 
-    private function getSSHConnection()
+    public function deleteFile($path)
     {
-        $ssh = new SSH2('127.0.0.1', 22);
-        if (!$ssh->login('hmpanel', 'password')) {
-            throw new \Exception('Login failed');
+        try {
+            if (Storage::delete($path)) {
+                $this->dispatch('showNotification', ['message' => 'File deleted successfully', 'type' => 'success']);
+            } else {
+                throw new \Exception('Failed to delete file');
+            }
+            $this->loadContents();
+        } catch (\Exception $e) {
+            $this->handleError('Error deleting file: ' . $e->getMessage());
         }
-        //run as root
-        $ssh->exec('sudo -s');
-
-        return $ssh;
     }
 
-    public function openFileEditor($filePath)
+    public function deleteFolder($path)
     {
-        $editableExtensions = ['.php', '.html', '.js', '.css', '.txt', '.env', '.json', '.xml', '.md', '.yml', '.yaml'];
-        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-
-        if (!in_array('.' . $extension, $editableExtensions)) {
-            $this->dispatch('show-toast', ['message' => 'This file type is not editable.', 'type' => 'error']);
-            return;
+        try {
+            if (Storage::deleteDirectory($path)) {
+                $this->dispatch('showNotification', ['message' => 'Folder deleted successfully', 'type' => 'success']);
+            } else {
+                throw new \Exception('Failed to delete folder');
+            }
+            $this->loadContents();
+        } catch (\Exception $e) {
+            $this->handleError('Error deleting folder: ' . $e->getMessage());
         }
-
-        $ssh = $this->getSSHConnection();
-        $content = $ssh->exec('cat ' . escapeshellarg($filePath));
-
-        $this->editableFileContent = $content;
-        $this->editingFilePath = $filePath;
-        $this->showEditorModal = true;
     }
 
-    public function saveFile()
+    public function uploadFile()
     {
-        $this->dispatch('getEditorContent');
+        try {
+            $this->validate([
+                'uploadedFile' => 'required|file|max:10240', // 10MB max
+            ]);
 
-        $ssh = $this->getSSHConnection();
-        $tempFile = tempnam(sys_get_temp_dir(), 'ssh_edit_');
-        file_put_contents($tempFile, $this->editableFileContent);
-
-        $ssh->put($this->editingFilePath, file_get_contents($tempFile));
-        unlink($tempFile);
-
-        $this->showEditorModal = false;
-        $this->dispatch('show-toast', ['message' => 'File saved successfully.', 'type' => 'success']);
+            $fileName = $this->uploadedFile->getClientOriginalName();
+            if ($this->uploadedFile->storeAs($this->currentPath, $fileName)) {
+                $this->dispatch('showNotification', ['message' => 'File uploaded successfully', 'type' => 'success']);
+            } else {
+                throw new \Exception('Failed to upload file');
+            }
+            $this->uploadedFile = null;
+            $this->loadContents();
+        } catch (\Exception $e) {
+            $this->handleError('Error uploading file: ' . $e->getMessage());
+        }
     }
 
-    public function updatedShowEditorModal()
+    public function showUnzipModal($filePath)
     {
-        if ($this->showEditorModal) {
-            $this->dispatch('initializeAceEditor', $this->editableFileContent);
+        $this->unzippingFile = $filePath;
+        $this->unzipPath = $this->currentPath;
+        $this->showUnzipModal = true;
+    }
+
+    public function unzipFile()
+    {
+        $this->validate([
+            'unzipPath' => 'required|string',
+        ]);
+
+        $zip = new ZipArchive;
+        $res = $zip->open(Storage::path($this->unzippingFile));
+
+        if ($res === TRUE) {
+            $extractPath = Storage::path($this->unzipPath);
+            $zip->extractTo($extractPath);
+            $zip->close();
+            $this->dispatch('showNotification', ['message' => 'File unzipped successfully', 'type' => 'success']);
         } else {
-            $this->editableFileContent = '';
-            $this->editingFilePath = '';
+            $this->dispatch('showNotification', ['message' => 'Failed to unzip file', 'type' => 'error']);
         }
+
+        $this->showUnzipModal = false;
+        $this->unzippingFile = null;
+        $this->unzipPath = '';
+        $this->loadContents();
     }
 
+    public function handleError($message)
+    {
+        $this->dispatch('showNotification', ['message' => $message, 'type' => 'error']);
+        \Log::error($message);
+    }
 
     public function render()
     {
