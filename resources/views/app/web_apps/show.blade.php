@@ -1,6 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
-        @lang('crud.web_apps.show_title')    </x-slot>
+        @lang('crud.web_apps.show_title')
+    </x-slot>
 
     <div class="container full-container py-5 flex flex-col gap-6">
         <x-partials.card>
@@ -49,3 +50,5 @@
         </x-partials.card>
     </div>
 </x-app-layout>
+
+

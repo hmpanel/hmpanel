@@ -168,7 +168,8 @@
 
 
         <!-- Grid -->
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 p-4 md:p-0 mt-3">
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-6">
+
 
             @can('view-any', App\Models\WebApp::class)
                 <!-- Card -->

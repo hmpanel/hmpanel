@@ -1,11 +1,11 @@
 <!--  Header Start -->
-<header class="container full-container w-full text-sm py-5 px-5">
+<header class="container full-container w-full text-sm pb-5 px-5">
 
 
 
     <!-- ========== HEADER ========== -->
 
-    <nav class=" w-full flex items-center justify-between bg-white rounded-xl p-4 shadow-sm" aria-label="Global">
+    <nav class=" w-full flex items-center justify-between bg-white rounded-b-xl p-4 shadow-sm" aria-label="Global">
         <ul class="icon-nav flex items-center gap-4">
 
 

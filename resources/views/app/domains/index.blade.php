@@ -1,12 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
-        @lang('crud.domains.index_title')    </x-slot>
+        @lang('crud.domains.index_title') </x-slot>
 
 
     <div class="container full-container py-5 flex flex-col gap-6">
         <x-partials.card>
             <div class="mb-5 mt-4">
-                <div class="flex flex-wrap justify-between">
+                <div class="flex flex-wrap justify-between pt-5 px-4">
                     <div class="md:w-1/2">
                         <form>
                             <div class="flex items-center w-full">

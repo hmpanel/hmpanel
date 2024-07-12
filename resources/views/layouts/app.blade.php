@@ -6,8 +6,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=1024px, initial-scale=1.0" />
 
 
     <!-- Favicon icon-->
@@ -19,8 +18,7 @@
     <title>hmPanel @if(!empty($header)) {{ ' | ' . $header }} @endif</title>
 
 
-    <link href="./assets/css/theme.css" rel="stylesheet" />
-
+    <link href="{{ asset('/assets/css/theme.css') }}" rel="stylesheet" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -101,16 +99,13 @@
 
     @stack('modals')
 
-
-
-
-    <script src="./assets/libs/jquery/dist/jquery.min.js"></script>
-    <script src="./assets/libs/simplebar/dist/simplebar.min.js"></script>
-    <script src="./assets/libs/iconify-icon/dist/iconify-icon.min.js"></script>
-    <script src="./assets/libs/@preline/dropdown/index.js"></script>
-    <script src="./assets/libs/@preline/overlay/index.js"></script>
-    <script src="./assets/js/sidebarmenu.js"></script>
-    <script src="./assets/libs/apexcharts/dist/apexcharts.min.js"></script>
+    <script src="{{ asset('/assets/libs/jquery/dist/jquery.min.js') }}"></script>
+    <script src="{{ asset('/assets/libs/simplebar/dist/simplebar.min.js') }}"></script>
+    <script src="{{ asset('/assets/libs/iconify-icon/dist/iconify-icon.min.js') }}"></script>
+    <script src="{{ asset('/assets/libs/@preline/dropdown/index.js') }}"></script>
+    <script src="{{ asset('/assets/libs/@preline/overlay/index.js') }}"></script>
+    <script src="{{ asset('/assets/js/sidebarmenu.js') }}"></script>
+    <script src="{{ asset('/assets/libs/apexcharts/dist/apexcharts.min.js') }}"></script>
 
     @livewireScripts
 

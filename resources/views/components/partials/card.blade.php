@@ -1,8 +1,8 @@
 @props([
-    'bodyClasses' => 'card-body',
+    'bodyClasses' => 'bg-white rounded-lg shadow overflow-hidden',
 ])
 
-<div {{ $attributes->merge(['class' => 'card']) }}>
+<div {{ $attributes->merge(['class' => '']) }}>
     <div class="{{ $bodyClasses }}">
 
         @if(isset($title))

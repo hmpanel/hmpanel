@@ -15,12 +15,7 @@
     .container{
         @apply max-w-7xl;
     }
-    .card {
-        @apply rounded-xl shadow-sm bg-white relative;
-    }
-    .card-body {
-        @apply p-6;
-    }
+
     .hs-dropdown-menu{
         @apply  shadow-md bg-white relative rounded-md;
     }

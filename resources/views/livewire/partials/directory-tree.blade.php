@@ -13,9 +13,9 @@
             <button wire:click="changeDirectory('{{ $directory['path'] }}')"
                     class="flex-grow text-left p-2 rounded {{ $activeDirectory === $directory['path'] ? 'text-blue-600' : 'hover:text-blue-600' }}">
                 @if ($directory['isExpanded'] ?? false)
-                    <i class="fa-light fa-folder-open mr-2 text-yellow-500 text-lg"></i>
+                    <i class="fa-solid fa-folder-open mr-2 text-yellow-500 text-lg"></i>
                 @else
-                    <i class="fa-light fa-folder mr-2 text-yellow-500 text-lg"></i>
+                    <i class="fa-solid fa-folder mr-2 text-yellow-500 text-lg"></i>
                 @endif
                 {{ $directory['name'] }}
             </button>

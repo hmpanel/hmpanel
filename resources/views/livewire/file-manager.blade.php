@@ -13,7 +13,7 @@
             <li>
                 <button wire:click="changeDirectory('/')"
                     class="flex items-center w-full text-left p-2 rounded-md {{ $activeDirectory === '/' ? 'bg-gray-100' : 'hover:bg-gray-100' }}">
-                    <i class="fa-light fa-folder-open mr-2 text-yellow-500 text-lg"></i>
+                    <i class="fa-solid fa-folder-open mr-2 text-yellow-500 text-lg"></i>
                     public_html
                 </button>
             </li>
@@ -31,38 +31,38 @@
         <div class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 p-2 px-0  flex items-center space-x-1">
             <button wire:click="initiateOperation('move')"
                 class="flex items-center space-x-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-xs">
-                <i class="fas fa-arrow-right fa-thin"></i>
-                <span>Move</span>
+                <i class="fas fa-arrow-right"></i>
+                <span class="hidden sm:block">Move</span>
             </button>
             <button wire:click="initiateOperation('copy')"
                 class="flex items-center space-x-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-xs">
-                <i class="fas fa-copy fa-thin"></i>
-                <span>Copy</span>
+                <i class="far fa-copy"></i>
+                <span class="hidden sm:block">Copy</span>
             </button>
             <button wire:click="openCreateFolderModal"
                 class="flex items-center space-x-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-xs">
-                <i class="fas fa-folder-plus fa-thin"></i>
-                <span>Create Folder</span>
+                <i class="far fa-folder-plus"></i>
+                <span class="hidden sm:block">Create Folder</span>
             </button>
             <button wire:click="openCreateFileModal"
                 class="flex items-center space-x-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-xs">
-                <i class="fas fa-file-plus fa-thin"></i>
-                <span>Create File</span>
+                <i class="far fa-file-plus"></i>
+                <span class="hidden sm:block">Create File</span>
             </button>
             <button wire:click="openUploadModal"
                 class="flex items-center space-x-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-xs">
-                <i class="fas fa-upload fa-thin"></i>
-                <span>Upload</span>
+                <i class="far fa-upload"></i>
+                <span class="hidden sm:block">Upload</span>
             </button>
             <button wire:click="initiateZip"
                 class="flex items-center space-x-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-xs">
-                <i class="fas fa-file-archive fa-thin"></i>
-                <span>Zip</span>
+                <i class="far fa-file-archive"></i>
+                <span class="hidden sm:block">Zip</span>
             </button>
             <button wire:click="confirmDelete"
                 class="flex items-center space-x-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-xs">
-                <i class="fas fa-trash fa-thin"></i>
-                <span>Delete</span>
+                <i class="far fa-trash"></i>
+                <span class="hidden sm:block">Delete</span>
             </button>
         </div>
 
@@ -70,20 +70,23 @@
 
 
             <button wire:click="goToPreviousDirectory"
-                class="p-1 text-gray-600 hover:bg-gray-100 rounded {{ $currentHistoryIndex > 0 ? '' : 'opacity-50 cursor-not-allowed' }}"
+                class="p-1 text-gray-600 hover:bg-gray-100 rounded {{ $currentHistoryIndex > 0 ? '' : 'opacity-50 cursor-not-allowed' }} hidden sm:block"
                 {{ $currentHistoryIndex > 0 ? '' : 'disabled' }}>
                 <i class="fas fa-chevron-left"></i>
             </button>
+
             <button wire:click="goToNextDirectory"
-                class="p-1 text-gray-600 hover:bg-gray-100 rounded {{ $currentHistoryIndex < count($directoryHistory) - 1 ? '' : 'opacity-50 cursor-not-allowed' }}"
+                class="p-1 text-gray-600 hover:bg-gray-100 rounded {{ $currentHistoryIndex < count($directoryHistory) - 1 ? '' : 'opacity-50 cursor-not-allowed' }} hidden sm:block"
                 {{ $currentHistoryIndex < count($directoryHistory) - 1 ? '' : 'disabled' }}>
                 <i class="fas fa-chevron-right"></i>
             </button>
+
             <button wire:click="goToParentDirectory"
                 class="p-1 text-gray-600 hover:bg-gray-100 rounded {{ $currentPath !== '/' ? '' : 'opacity-50 cursor-not-allowed' }}"
                 {{ $currentPath !== '/' ? '' : 'disabled' }}>
                 <i class="fas fa-arrow-up"></i>
             </button>
+
             <button wire:click="reloadDirectory" class="p-1 text-gray-600 hover:bg-gray-100 rounded">
                 <i class="fas fa-sync-alt"></i>
             </button>
@@ -116,10 +119,8 @@
                 </span>
             </div>
             <div class="relative">
-                <input type="text"
-       wire:model.live="searchQuery"
-       placeholder="Search"
-       class="border-gray-200 rounded px-3 py-1 text-sm text-gray-600 pr-8">
+                <input type="text" wire:model.live="searchQuery" placeholder="Search"
+                    class="border-gray-200 rounded px-3 py-1 text-sm text-gray-600 pr-8">
                 <i class="fas fa-search absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
             </div>
         </div>
@@ -185,40 +186,38 @@
                                 </td>
 
 
-                                <td class="py-3 px-6 justify-end flex">
+                                <td class="py-3 px-6 justify-end flex space-x-1">
 
                                     <!-- Existing buttons -->
                                     @if ($file['type'] === 'file')
                                         <button wire:click="downloadFile('{{ $file['path'] }}')"
-                                            class="flex items-center space-x-1 px-2 py-1 w-5 h-5 justify-center bg-green-500 hover:bg-green-700 text-white font-semibold  rounded transition-colors duration-300 mr-2">
-                                            <i class="fas fa-arrow-down fa-thin"></i>
+                                            class="w-[25px] h-[25px] text-[12px] bg-gray-200 text-gray-500 hover:bg-blue-600 hover:text-white rounded-md">
+                                            <i class="far fa-arrow-down"></i>
                                         </button>
                                     @endif
 
-
                                     <button wire:click="startRenaming('{{ $file['path'] }}')"
-                                        class="flex items-center space-x-1 px-2 py-1 w-5 h-5 justify-center bg-green-500 hover:bg-green-700 text-white font-semibold rounded transition-colors duration-300 mr-2">
-                                        <i class="fa-thin fa-i-cursor"></i>
+                                        class="w-[25px] h-[25px] text-[12px] bg-gray-200 text-gray-500 hover:bg-blue-600 hover:text-white rounded-md">
+                                        <i class="far fa-i-cursor"></i>
                                     </button>
-
 
                                     @if ($file['type'] === 'file')
                                         <button wire:click="editFile('{{ $file['path'] }}')"
-                                            class="flex items-center space-x-1 px-2 py-1 w-5 h-5 justify-center bg-green-500 hover:bg-green-700 text-white font-semibold  rounded transition-colors duration-300 mr-2">
-                                            <i class="fas fa-edit fa-thin"></i>
+                                            class="w-[25px] h-[25px] text-[12px] bg-gray-200 text-gray-500 hover:bg-blue-600 hover:text-white rounded-md">
+                                            <i class="far fa-edit"></i>
 
                                         </button>
                                         @if (pathinfo($file['name'], PATHINFO_EXTENSION) === 'zip')
                                             <button wire:click="initiateUnzip('{{ $file['path'] }}')"
-                                                class="flex items-center space-x-1 px-2 py-1 w-5 h-5 justify-center bg-green-500 hover:bg-green-700 text-white font-semibold  rounded transition-colors duration-300 mr-2">
-                                                <i class="fas fa-folder-open fa-thin"></i>
+                                                class="w-[25px] h-[25px] text-[12px] bg-gray-200 text-gray-500 hover:bg-blue-600 hover:text-white rounded-md">
+                                                <i class="far fa-folder-open"></i>
 
                                             </button>
                                         @endif
                                     @endif
                                     <button wire:click="confirmDelete('{{ $file['path'] }}')"
-                                        class="flex items-center space-x-1 px-2 py-1 w-5 h-5 justify-center bg-red-500 hover:bg-red-700 text-white font-semibold rounded transition-colors duration-300 mr-2">
-                                        <i class="fas fa-trash fa-thin"></i>
+                                        class="w-[25px] h-[25px] text-[12px] bg-gray-200 text-gray-500 hover:bg-blue-600 hover:text-white rounded-md">
+                                        <i class="far fa-trash-can"></i>
                                     </button>
                                 </td>
 
@@ -241,28 +240,29 @@
 
                     <div class="relative top-20 mx-auto p-5 py-1 w-3/4 shadow-lg rounded-md bg-gray-800">
 
-                       <div class="flex justify-between items-center mb-4">
+                        <div class="flex justify-between items-center mb-4">
 
-                        <h3 class="text-lg text-white font-semibold">Editing: {{ basename($editingFile['path']) }}</h3>
+                            <h3 class="text-lg text-white font-semibold">Editing: {{ basename($editingFile['path']) }}
+                            </h3>
 
-                        <div class="flex justify-end mt-4">
-
-
-                            <button @click="saveChanges"
-                                class="bg-blue-700 text-white w-5 h-5 rounded-full hover:bg-blue-600 mr-2 text-[10px] flex items-center justify-center">
-                                <i class="fa-light fa-save"></i>
-                            </button>
+                            <div class="flex justify-end mt-4 space-x-2">
 
 
-                            <button @click="closeModal"
-                                class="bg-red-600 text-white  w-5 h-5 rounded-full hover:bg-red-500 text-[10px] flex items-center justify-center">
-                                <i class="fa-light fa-xmark"></i>
-                            </button>
+                                <button @click="saveChanges"
+                                    class="w-[25px] h-[25px] text-[12px] bg-gray-200 text-gray-500 hover:bg-blue-600 hover:text-white rounded-md">
+                                    <i class="fas fa-save"></i>
+                                </button>
 
+
+                                <button @click="closeModal"
+                                    class="w-[30px] h-[30px] text-[14px] bg-red-100 text-[#dc3545] hover:bg-red-600 hover:text-white rounded-md">
+                                    <i class="fas fa-xmark"></i>
+                                </button>
+
+
+                            </div>
 
                         </div>
-
-                       </div>
 
                         <div x-ref="editor" class="w-full h-[600px] mb-4 rounded-md overflow-hidden">
 
@@ -510,6 +510,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/php/php.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/clike/clike.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/mode/multiplex.min.js"></script>
+
+
+    <style>
+        .CodeMirror {
+            height: 100%;
+        }
+    </style>
 
 
     <script>
