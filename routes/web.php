@@ -25,7 +25,6 @@ use phpseclib3\Net\SSH2;
 |
 */
 
-
 Route::redirect('/', 'dashboard');
 
 Route::prefix('/')
@@ -50,7 +49,6 @@ Route::prefix('/sh')->group(function () {
     Route::get('/delsite', [ShellController::class, 'delsite']);
 });
 
-
 Route::prefix('/conf')->group(function () {
 
     Route::get('/cron/{server_id}', [ConfController::class, 'cron']);
@@ -60,6 +58,4 @@ Route::prefix('/conf')->group(function () {
     Route::get('/alias/{alias_id}', [ConfController::class, 'alias']);
     Route::get('/php/{site_id}', [ConfController::class, 'php']);
     Route::get('/supervisor', [ConfController::class, 'supervisor']);
-
 });
-
