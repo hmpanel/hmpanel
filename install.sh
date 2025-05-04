@@ -48,7 +48,6 @@ EOF
 
 
 echo "Installation has been started... Hold on!"
-echo "Installation has been started... Hold on!"f
 
 
 # wait 3 seconds
